@@ -36,24 +36,31 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	await context.bot.send_message(chat_id=update.effective_chat.id, text=message_start)
 
 
-async def btc2eur(update: Update,context : ContextTypes.DEFAULT_TYPE):
-	user_input = float(context.args[0]) if context.args else None
-	if user_input is not None:
-		result = round(user_input*prices.price, 2)
-		message = f"{user_input} BTC = {result} EUR"
-		await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-	else:
-		await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the number of bitcoin you want to convert in Euro! Enter /btc2eur your_amount.")
+async def btc2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
+      user_input = float(context.args[0]) if context.args else None
+      if user_input is not None:
+            res = round(user_input*prices.price, 2)
+            res = "{:=,}".format(res)
+            user_input = "{:=,}".format(user_input)
+            message = f"{user_input} BTC = {res} EUR"
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
+      else:
+          await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the number of bitcoin you want to convert in Euro! Enter /btc2eur your_amount.")
+		
 
-async def eur2btc(update: Update,context : ContextTypes.DEFAULT_TYPE):
-	user_input = float(context.args[0]) if context.args else None
-	if user_input is not None:
-		result = round(user_input/prices.price,8)
-		message = f"{user_input} EUR = {result} BTC"
-		await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-	else:
-		await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in Euro! Enter /eur2btc your_amount.")
+async def eur2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_input = float(context.args[0]) if context.args else None
+    if user_input is not None:
+        res = round(user_input/prices.price, 8)
+        res = "{:=,}".format(res)
+        user_input = "{:=,}".format(user_input)
+        message = f"{user_input} EUR = {res} BTC"
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+    else:
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in Euro! Enter /eur2btc your_amount.")
+
 
 async def btc2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     btc_input = float(context.args[0]) if context.args else None
@@ -61,6 +68,7 @@ async def btc2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if btc_input is not None:
         sat_conversion = round(btc_input * sat, 8)
         sat_conversion = "{:=,}".format(sat_conversion)
+        btc_input = "{:=,}".format(btc_input)
         message = f"{btc_input} BTC = {sat_conversion} sats"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     else:
@@ -88,6 +96,7 @@ async def sats2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
         eur = prices.price
         res = round(eur*btc, 3)
         res = "{:=,}".format(res)
+        sats_input = "{:=,}".format(sats_input)
         message = f"{sats_input} sats = {res} €" 
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     else:
@@ -102,6 +111,7 @@ async def eur2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         eur = prices.price
         res = int((sats*eur_input)/eur)
         res = "{:=,}".format(res)
+        eur_input = "{:=,}".format(eur_input)
         message = f"{eur_input} € = {res} sats" 
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     else:

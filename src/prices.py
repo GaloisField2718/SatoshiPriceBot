@@ -39,9 +39,12 @@ currentTime = currentDateAndTime.strftime("Le %D, à %H:%M:%S")
  ###############################################################
 ######		MESSAGES 		#######################
 ###############################################################
+text_price = "{:=,}".format(price)
+text_volumeEUR = "{:=,}".format(volumeEUR)
+text_volumeToken = "{:=,}".format(volumeToken)
 
-message_info= f"{currentTime} : Le BTC est à {price}€, avec un volume de {volumeEUR}€ et {volumeToken}BTC, avec une variation de {variations}% en 24 heures."
+message_info= f"{currentTime} : Le BTC est à {text_price}€, avec un volume de {text_volumeEUR}€ et {text_volumeToken}BTC, avec une variation de {variations}% en 24 heures."
 
-message_cours = f"{currentTime} : Le BTC est à {price}€."
+message_cours = f"{currentTime} : Le BTC est à {text_price}€."
 
 
