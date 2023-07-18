@@ -93,7 +93,7 @@ async def sats2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Gérer le fait que l'utilisateur mette un décimal qui est une erreur
     sats_input = int(context.args[0]) if context.args else None
     if sats_input is not None:
-        res = "{:=,}".format(satseur(sats_input, 0))
+        res = "{:=,}".format(convert.satseur(sats_input, 0))
         sats_input = "{:=,}".format(sats_input)
         message = f"{sats_input} sats = {res} €" 
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
@@ -105,7 +105,7 @@ async def eur2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Gérer le fait que l'utilisateur mette un décimal qui est une erreur
     eur_input = float(context.args[0]) if context.args else None
     if eur_input is not None:
-        res = "{:=,}".format(satseur(eur_input, 1))
+        res = "{:=,}".format(.convert.satseur(eur_input, 1))
         eur_input = "{:=,}".format(eur_input)
         message = f"{eur_input} € = {res} sats" 
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
