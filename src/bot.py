@@ -78,27 +78,29 @@ async def btc2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def sats2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Gérer le fait que l'utilisateur mette un décimal qui est une erreur
-    sats_input = int(context.args[0]) if context.args else None
-    btc = 10**(-8)
-    if sats_input is not None:
-        btc_conversion = "{:=,}".format(convert.satsbtc(sats_input,0))
-        sats_input = "{:=,}".format(sats_input)
+    try : 
+        sats_input = int(context.args[0]) if context.args else None
+        btc = 10**(-8)
+        if sats_input is not None:
+            btc_conversion = "{:=,}".format(convert.satsbtc(sats_input,0))
+            sats_input = "{:=,}".format(sats_input)
 
-        message = f"{sats_input} sats = {btc_conversion} BTC" 
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-    else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the number of satoshis you want to transform in btc! Enter /sats2btc your_sats_amount.")
+            message = f"{sats_input} sats = {btc_conversion} BTC" 
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    except ValueError : 
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="The amount of satoshis (sats) is an INTEGER ! Enter /sats2btc your_sats_amount.")
 
 async def sats2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Gérer le fait que l'utilisateur mette un décimal qui est une erreur
-    sats_input = int(context.args[0]) if context.args else None
-    if sats_input is not None:
-        res = "{:=,}".format(convert.satseur(sats_input, 0))
-        sats_input = "{:=,}".format(sats_input)
-        message = f"{sats_input} sats = {res} €" 
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-    else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the number of satoshis you want to transform in euros! Enter /sats2eur your_sats_amount.")
+    try : 
+        sats_input = int(context.args[0]) if context.args else None
+        if sats_input is not None:
+            res = "{:=,}".format(convert.satseur(sats_input, 0))
+            sats_input = "{:=,}".format(sats_input)
+            message = f"{sats_input} sats = {res} €" 
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    except ValueError
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of satoshis (sats) you want to transform in euros! The amount is an INTEGER ! Take care. Enter /sats2eur your_sats_amount.")
 
 
 async def eur2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -136,6 +138,10 @@ async def codeBot(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lines = f.readlines()
     message = lines
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+# ---------------------------------------------------------
+#               VOLUME COMMANDS
+# ---------------------------------------------------------
 
 
 
