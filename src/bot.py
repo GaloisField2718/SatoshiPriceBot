@@ -99,7 +99,7 @@ async def sats2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sats_input = "{:=,}".format(sats_input)
             message = f"{sats_input} sats = {res} €" 
             await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-    except ValueError
+    except ValueError :
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of satoshis (sats) you want to transform in euros! The amount is an INTEGER ! Take care. Enter /sats2eur your_sats_amount.")
 
 
