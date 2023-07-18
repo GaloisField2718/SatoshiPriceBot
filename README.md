@@ -77,12 +77,15 @@ And... That's it. You created your first new command in this bot.
 
 ## Updates
 
+The last update changed fetch prices. Before I used `python-binance`, but now I use [CoinGeck API](https://www.coingecko.com/fr/api/documentation).
+
+I added, many different information about Bitcoin from coingecko.
+
 Please be free to update this repo and chat with me about improvement proposals. It's a small compilation of diverse code that I can did over the time in my coding journey. 
 It's a pleasure to think about possible improvements. 
 
-The next step would be to deploy it on a server and I'm still thinking about how I will do this.
+For the next, I have to think about a cointainerisation with `Docker` to be able to run on any server, very quickly ; without manual installation.
 
-I think to use Docker but I don't know in what way for now. 
 
 # Contact
 

@@ -5,11 +5,10 @@ name = "pypi"
 
 [packages]
 python-telegram-bot = "*"
-python-binance = "*"
-pandas = "*"
 numpy = "*"
 datetime = "*"
 python-dotenv = "*"
+requests = "*"
 
 [dev-packages]
 
