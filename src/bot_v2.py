@@ -313,7 +313,9 @@ async def btcSupply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     market_data = fetcher.get_market_data(data)
     supply = fetcher.get_circulating_supply(market_data)
     actual_supply_str = f"{supply:,.0f}"
-    
+    fdv = fetcher.get_fdv(market_data)
+    fully_diluted_valuation = f"{fdv:,.0f}"
+
     message_supply = f"Actual supply of Bitcoin is {actual_supply_str} BTC, for a fully diluted market cap : {fully_diluted_valuation} EUR. \n "
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_supply)
 
