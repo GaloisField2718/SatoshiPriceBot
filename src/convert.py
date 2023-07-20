@@ -1,4 +1,4 @@
-from fetch_prices import *
+from fetch_prices import CoinDataFetcher
 
  # To convert sats to btc way=0, to convert btc to sats it's 1.
 def satsbtc(amount, way):
@@ -16,6 +16,12 @@ def satsbtc(amount, way):
 
 # To convert btc to eur way = 0, to convert eur to btc it's 1
 def btceur(amount, way):
+    # DATA
+    fetcher = CoinDataFetcher('bitcoin')
+    data = fetcher.get_coin_data()
+    market_data = fetcher.get_market_data(data)
+    price = fetcher.get_current_price(market_data)
+
     if way == 0:
         eur_price = price*amount
         eur_price = round(eur_price,3)
