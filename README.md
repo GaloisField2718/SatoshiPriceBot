@@ -44,7 +44,7 @@ KEY=numbers:Letters
 After installation, you can run your bot with : 
 
 ```
-python3 bot.py
+cd src && python3 bot_v2.py
 ```
 
 Warning be sure to run `pipenv shell` if you are using a new terminal session.
@@ -85,6 +85,14 @@ Please be free to update this repo and chat with me about improvement proposals.
 It's a pleasure to think about possible improvements. 
 
 For the next, I have to think about a cointainerisation with `Docker` to be able to run on any server, very quickly ; without manual installation.
+
+## TODO
+
+- Improve volumes visualisation
+- Improve UX with :
+   - making recommandations of available commands
+   - if someone type a conversion command without amount : `/sats2eur` send a message to say : 'Enter the amount to convert' and after then make the conversion.
+- Improve HTML treatment which is not good for `/btcInfo` for example
 
 
 # Contact
