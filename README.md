@@ -77,9 +77,9 @@ And... That's it. You created your first new command in this bot.
 
 ## Updates
 
-The last update changed fetch prices. Before I used `python-binance`, but now I use [CoinGeck API](https://www.coingecko.com/fr/api/documentation).
+The last update changed fetch prices. Before I used `python-binance`, but now I use [CoinGecko API](https://www.coingecko.com/fr/api/documentation).
 
-I added, many different information about Bitcoin from coingecko.
+I added, many different information about Bitcoin from CoinGecko.
 
 Please be free to update this repo and chat with me about improvement proposals. It's a small compilation of diverse code that I can did over the time in my coding journey. 
 It's a pleasure to think about possible improvements. 
@@ -88,11 +88,12 @@ For the next, I have to think about a cointainerisation with `Docker` to be able
 
 ## TODO
 
-- Improve volumes visualisation
+- Improve volumes visualisation ;
 - Improve UX with :
-   - making recommandations of available commands
-   - if someone type a conversion command without amount : `/sats2eur` send a message to say : 'Enter the amount to convert' and after then make the conversion.
-- Improve HTML treatment which is not good for `/btcInfo` for example
+   - making recommandations of available commands ;
+   - if someone type a conversion command without amount : `/sats2eur` send a message to say : 'Enter the amount to convert' and after then make the conversion ;
+- Improve HTML treatment which is not good for `/btcInfo` for example ;
+- Make a containerisation of this code with `Docker`.
 
 
 # Contact
