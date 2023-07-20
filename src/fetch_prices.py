@@ -1,4 +1,9 @@
+# @author : Galois Field
+# @date : 07-17-2023
+
 # Fetch coin data
+# Make with help of [Rix AI](https://hashnode.com/rix)
+
 import requests
 import json
 from datetime import datetime
