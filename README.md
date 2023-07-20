@@ -11,7 +11,7 @@ For Telegram usage please find two major references behind :
 
 ### Initialisation
 ```
-git clone https://github.com/GaloisField2718/telegram_bot.git && cd telegram_bot
+git clone https://github.com/GaloisField2718/SatoshiPriceBot.git && cd SatoshiPriceBot
 ```
 
 ### Python env
