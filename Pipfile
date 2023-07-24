@@ -9,6 +9,8 @@ numpy = "*"
 datetime = "*"
 python-dotenv = "*"
 requests = "*"
+chromedriver-binary = "*"
+selenium = "*"
 
 [dev-packages]
 
