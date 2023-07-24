@@ -271,7 +271,9 @@ async def btcInfo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     change_from_ath = ath_data['ath_change']
     fdv = fetcher.get_fdv(market_data)
     fully_diluted_valuation = f"{fdv:,.0f}"
-
+    supply = fetcher.get_circulating_supply(market_data)
+    actual_supply_str = f"{supply:,.0f}"
+  
     message_ath = f"Bitcoin All Time High (ATH) was {ath_str} EUR at {ath_date}. Since ATH, Bitcoin dropped by : {change_from_ath}%.\n"
     message_supply = f"Actual supply of Bitcoin is {actual_supply_str} BTC, for a fully diluted market cap : {fully_diluted_valuation} EUR. \n "
     message_info = f"Bitcoin was born {genesis}, it can be described as like this :\n {description}\n {message_ath}\n {message_supply}\n For more information take a look on informative commands.\n"
@@ -312,8 +314,8 @@ async def btcSupply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = fetcher.get_coin_data()
     market_data = fetcher.get_market_data(data)
     supply = fetcher.get_circulating_supply(market_data)
-    actual_supply_str = f"{supply:,.0f}"
     fdv = fetcher.get_fdv(market_data)
+    actual_supply_str = f"{supply:,.0f}"
     fully_diluted_valuation = f"{fdv:,.0f}"
 
     message_supply = f"Actual supply of Bitcoin is {actual_supply_str} BTC, for a fully diluted market cap : {fully_diluted_valuation} EUR. \n "
