@@ -9,7 +9,7 @@ For Telegram usage please find two major references behind :
 
 - [Extensions Your first Bot · python-telegram-bot/python-telegram-bot Wiki](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions---Your-first-Bot)
 
-### ⚠️ Features
+### ⚠️  Features
 Due to the oshi's feature which is fetching data from selenium you will be required to have Google chrome installed on your computer.
 No worries, you can download as in [ubuntu server](https://askubuntu.com/questions/245041/how-do-i-install-chrome-on-a-server), [google_chrome [Wiki ubuntu-fr]](https://doc.ubuntu-fr.org/google_chrome) and for other OS you can download from [Official link](https://support.google.com/chrome/a/answer/9025903?hl=fr).
 
@@ -109,6 +109,7 @@ For the next, I have to think about a cointainerisation with `Docker` to be able
 
 ## TODO
 
+- Put a gif or related to `/oshi` message ; Fetch the loading indication to know where are we.
 - Improve volumes visualisation ;
 - Improve UX with :
    - making recommandations of available commands ;
