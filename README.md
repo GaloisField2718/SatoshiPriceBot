@@ -9,7 +9,28 @@ For Telegram usage please find two major references behind :
 
 - [Extensions Your first Bot · python-telegram-bot/python-telegram-bot Wiki](https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions---Your-first-Bot)
 
+### ⚠️ Features
+Due to the oshi's feature which is fetching data from selenium you will be required to have Google chrome installed on your computer.
+No worries, you can download as in [ubuntu server](https://askubuntu.com/questions/245041/how-do-i-install-chrome-on-a-server), [google_chrome [Wiki ubuntu-fr]](https://doc.ubuntu-fr.org/google_chrome) and for other OS you can download from [Official link](https://support.google.com/chrome/a/answer/9025903?hl=fr).
+
+```
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
+```
+
+```
+sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+```
+
+```
+sudo apt-get update
+sudo apt-get install google-chrome-stable
+```
+
+Verify : `google-chrome --version`
+
+
 ### Initialisation
+
 ```
 git clone https://github.com/GaloisField2718/SatoshiPriceBot.git && cd SatoshiPriceBot
 ```
