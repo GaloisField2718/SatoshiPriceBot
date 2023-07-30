@@ -27,7 +27,7 @@ import random
 from fetch_prices import CoinDataFetcher
 import convert
 from datetime import datetime, timedelta, timezone
-import oshi
+import oshi_plus as oshi
 
 # ---------------------------------------------------------
 #                   CONFIG
@@ -338,6 +338,16 @@ async def oshi_(update: Update, context: ContextTypes.DEFAULT_TYPE) :
     
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
 
+async def ordi(update: Update, context: ContextTypes.DEFAULT_TYPE) :
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Please wait it's loading ....") 
+    (price_sats, amount_ordi, price_usd, price_btc) = oshi.fetch()
+    price_sats = "{:=,}".format(price_sats)
+    message = f"Price per ORDI: {price_sats} sats. \n\n"
+    message += f'Pack : {amount_oshi} ORDI for {price_usd} = {price_btc} BTC'
+    
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
+
+
 async def btcDevEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
@@ -386,7 +396,8 @@ async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_btcSupply = f"/btcSupply : Give the actual Bitcoin supply and its value. 🤑 \n "
     message_btcPublicEngagement = f"/btcPublicEngagement : Measure of interest took from coingecko📱\n"
     message_btcDevEngagement = f"/btcDevEngagement: Some measure from github `bitcoin` repo 😼 \n "
-    message_oshi = "/oshi : Fetch Last price of OSHI from unisat."
+    message_oshi = "/oshi : Fetch Last price of OSHI from unisat.\n " #TODO : Details OSHI project
+    message_ordi = "/ordi : Fetch last price of ORDI from unisat. "#TODO : Tell the story about ORDI
 
     message_help += sep2 + message_btc2eur + message_eur2btc + message_btc2sats + message_sats2btc + message_sats2eur + message_eur2sats + sep3 + message_codePrices+message_codeConvert + \
         message_codeBot +sep_vol + message_major_volumes +message_kraken_volumes + message_binance_volumes + sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + \
@@ -425,6 +436,7 @@ if __name__ == '__main__':
         'btcDevEngagement', btcDevEngagement)
 
     oshi_handler = CommandHandler('oshi', oshi_)
+    ordi_handler = CommandHandler('ordi', ordi) 
     help_handler = CommandHandler('help', helper)
 
     application.add_handler(start_handler)
@@ -437,6 +449,7 @@ if __name__ == '__main__':
     application.add_handler(btcPublicEngagement_handler)
     application.add_handler(btcDevEngagement_handler)
     application.add_handler(oshi_handler)
+    application.add_handler(ordi_handler)
 
     application.add_handler(eur2btc_handler)
     application.add_handler(btc2eur_handler)
