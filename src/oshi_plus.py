@@ -20,9 +20,10 @@ def fetch(token):
     xpath = "//*[@id='rc-tabs-0-panel-1']/div/div/div[1]/div[2]/div[3]/span[1]"
     price_btc = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     price_btc = driver.find_element(By.XPATH, xpath)
-
+    
     price_sats = int(price_sats.text)
-    amount_oshi = int(amount_oshi.text)
+    amount_oshi = (amount_oshi.text).replace(',','')
+    amount_oshi = int(amount_oshi)
     price_usd = price_usd.text
     price_btc = round(float(price_btc.text),8)
     
