@@ -10,9 +10,9 @@ import logging
 
 from telegram import Update, error
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, ContextTypes, CommandHandler
-# Ajoute cette ligne au début du fichier pour importer la classe `ReplyKeyboardMarkup`
 from telegram import ReplyKeyboardMarkup
 
+from telegram import InputMediaPhoto #To reply with a Photo
 
 #####################################
 ### PACKAGE FOR .env hidden file ####
@@ -28,6 +28,7 @@ from fetch_prices import CoinDataFetcher
 import convert
 from datetime import datetime, timedelta, timezone
 import oshi_plus as oshi
+import os
 
 # ---------------------------------------------------------
 #                   CONFIG
@@ -44,6 +45,7 @@ logging.basicConfig(
 # ---------------------------------------------------------
 #                   UTILS
 # ---------------------------------------------------------
+
 
 def convert_str(data):
     printable_str = str(data).replace("{", "").replace("}", "")
@@ -236,7 +238,7 @@ async def kraken_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     rand = random.randint(0, 1)
-    message_start = f"Welcome on SatoshiPriceBot 👋, \n Here you can find different information about bitcoin with /btcInfo command. You can also make conversions between btc and euro or btc and satoshis. \n To have the full commands list please try /help.\n For any suggestions you can contact @Dev_block. \n See you 🔜 in the /help message.\n \n 👉 If you want to help the hosting 🎛️ of the bot you can send some sats at 💶bc1phpx4kqdqnkgf2ujugchk9vc5uphs2ngx46l8tfynly8f5zcvfccst42g7k 👈."
+    message_start = f"Welcome on SatoshiPriceBot 👋, \n Here you can find different information about bitcoin with /btcInfo command. You can also make conversions between btc and euro or btc and satoshis. \n To have the full commands list please try /help.\n For any suggestions you can contact @Dev_block. \n See you 🔜 in the /help message.\n \n 👉 If you want to help the hosting 🎛️ of the bot you can send some sats at 💶bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k 👈."
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_start)
 
 
@@ -382,8 +384,12 @@ async def btcDevEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_dev)
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = "You want to support the hosting of the bot ⁉️ You can send some sats at 👉bc1phpx4kqdqnkgf2ujugchk9vc5uphs2ngx46l8tfynly8f5zcvfccst42g7k👈.\n I'm hosted at Hostinger and payment can be done in Bitcoin ! So, your money will directly go to Hostinger 🙃. "
+    message = "You want to support the hosting of the bot ⁉️ You can send some sats at 👉bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k👈.\n I'm hosted at Hostinger and payment can be done in Bitcoin ! So, your money will directly go to Hostinger 🙃. "
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    pic = os.path.join(os.getcwd(), 'qr_generator', 'qr_myaddress.png')
+    print(os.getcwd())
+
+    await context.bot.send_photo(chat_id=update.effective_chat.id,photo=pic)
 
 
 

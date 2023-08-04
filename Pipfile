@@ -10,7 +10,8 @@ datetime = "*"
 python-dotenv = "*"
 requests = "*"
 selenium = "*"
-chromedriver-binary = "==114.0.5735.90.0"
+chromedriver-binary = "==115.0.5790.170"
+qrcode = "*"
 
 [dev-packages]
 
