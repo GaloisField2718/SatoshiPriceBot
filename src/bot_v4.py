@@ -236,7 +236,7 @@ async def kraken_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     rand = random.randint(0, 1)
-    message_start = f"Welcome on SatoshiPriceBot 👋, \n Here you can find different information about bitcoin with /btcInfo command. You can also make conversions between btc and euro or btc and satoshis. \n To have the full commands list please try /help.\n For any suggestions you can contact @Dev_block. \n See you 🔜 in the /help message.\n"
+    message_start = f"Welcome on SatoshiPriceBot 👋, \n Here you can find different information about bitcoin with /btcInfo command. You can also make conversions between btc and euro or btc and satoshis. \n To have the full commands list please try /help.\n For any suggestions you can contact @Dev_block. \n See you 🔜 in the /help message.\n \n 👉 If you want to help the hosting 🎛️ of the bot you can send some sats at 💶bc1phpx4kqdqnkgf2ujugchk9vc5uphs2ngx46l8tfynly8f5zcvfccst42g7k 👈."
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_start)
 
 
@@ -381,6 +381,11 @@ async def btcDevEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_dev = f"From Github repo (https://github.com/bitcoin/bitcoin) we have : \n - {forks} forks ; \n  - {stars} stars ; \n - {subs} subscribers ; \n - {total_issues} total issues reported ; \n {pull_requests} pull requests to merge ; \n - {contributors} contributors ; \n - {additions_deletions['additions']} additions for {additions_deletions['deletions']} deletions ; \n - {commit_4w} commits on last 4 weeks.\n"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_dev)
 
+async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = "You want to support the hosting of the bot ⁉️ You can send some sats at 👉bc1phpx4kqdqnkgf2ujugchk9vc5uphs2ngx46l8tfynly8f5zcvfccst42g7k👈.\n I'm hosted at Hostinger and payment can be done in Bitcoin ! So, your money will directly go to Hostinger 🙃. "
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+
 
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_help = f"Here you can find details of all available commands 🖲️ : \n\n"
@@ -416,10 +421,11 @@ async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_oshi = "/oshi : Fetch Last price of OSHI from unisat.\n " #TODO : Details OSHI project
     message_ordi = "/ordi : Fetch last price of ORDI from unisat. \n "#TODO : Tell the story about ORDI
     message_getlastprice = "/getlastprice `token` : Fetch the last price from Unisat of `token`. Ex : /getlastprice yari (not case sensitive for token). \n "
+    message_support = "/support : 🤗😇🥰.\n\n"
 
     message_help += sep2 + message_btc2eur + message_eur2btc + message_btc2sats + message_sats2btc + message_sats2eur + message_eur2sats + sep3 + message_codePrices+message_codeConvert + \
         message_codeBot +sep_vol + message_major_volumes +message_kraken_volumes + message_binance_volumes + sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + \
-        message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + sep_brc20 + message_oshi + message_ordi + message_getlastprice
+        message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + sep_brc20 + message_oshi + message_ordi + message_getlastprice + message_support
 
     message_help += "/help : Display this message 💬 \n"
 
@@ -458,6 +464,7 @@ if __name__ == '__main__':
     ordi_handler = CommandHandler('ordi', ordi)
     getlastprice_handler = CommandHandler('getlastprice', getlastprice)
     help_handler = CommandHandler('help', helper)
+    support_handler = CommandHandler('support', support)
 
     application.add_handler(start_handler)
     application.add_handler(help_handler)
@@ -471,6 +478,7 @@ if __name__ == '__main__':
     application.add_handler(oshi_handler)
     application.add_handler(ordi_handler)
     application.add_handler(getlastprice_handler)
+    application.add_handler(support_handler)
 
     application.add_handler(eur2btc_handler)
     application.add_handler(btc2eur_handler)
