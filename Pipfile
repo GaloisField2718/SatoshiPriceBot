@@ -9,8 +9,8 @@ numpy = "*"
 datetime = "*"
 python-dotenv = "*"
 requests = "*"
-chromedriver-binary = "*"
 selenium = "*"
+chromedriver-binary = "==114.0.5735.90.0"
 
 [dev-packages]
 
