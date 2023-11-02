@@ -27,7 +27,7 @@ import random
 from fetch_prices import CoinDataFetcher
 import convert
 from datetime import datetime, timedelta, timezone
-import oshi_plus as oshi
+import oshi
 
 # ---------------------------------------------------------
 #                   CONFIG
@@ -265,12 +265,10 @@ async def btcInfo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     description = fetcher.get_description(data)
     genesis = fetcher.get_genesis_date(data)
     ath_data = fetcher.get_ath_data(market_data)
-    supply = fetcher.get_circulating_supply(market_data)
-    actual_supply_str = f"{supply:,.0f}"
     ath = ath_data['ath']
-    change_from_ath = ath_data['ath_change']
     ath_str = f"{ath:,.0f}"
     ath_date = ath_data['ath_date']
+    change_from_ath = ath_data['ath_change']
     fdv = fetcher.get_fdv(market_data)
     fully_diluted_valuation = f"{fdv:,.0f}"
 
@@ -332,43 +330,14 @@ async def btcPublicEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_public)
 
 async def oshi_(update: Update, context: ContextTypes.DEFAULT_TYPE) :
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Please wait it's loading ....") 
-    (price_sats, amount_oshi, price_usd, price_btc) = oshi.fetch("oshi")
+    (price_sats, amount_oshi, price_usd, price_btc) = oshi.fetch()
     price_sats = "{:=,}".format(price_sats)
-    message = f"Price per OSHI : {price_sats} sats. \n\n"
-    message += f'Pack : {amount_oshi} OSHI for {price_usd} = {price_btc} BTC'
+    message = "Price per OSHI : " +price_sats + 'sats'+'\n\n'
+    message += 'Pack : '+amount_oshi + 'OSHI for ' + \
+    price_usd.text + ' = ' + price_btc + 'BTC'
     
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
 
-async def ordi(update: Update, context: ContextTypes.DEFAULT_TYPE) :
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Please wait it's loading ....") 
-    (price_sats, amount_ordi, price_usd, price_btc) = oshi.fetch("ordi")
-    price_sats = "{:=,}".format(price_sats)
-    message = f"Price per ORDI: {price_sats} sats. \n\n"
-    message += f'Pack : {amount_ordi} ORDI for {price_usd} = {price_btc} BTC'
-    
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
-
-
-<<<<<<< HEAD
-=======
-async def getlastprice(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Please wait it's loading ....")
-    token = context.args[0] if context.args else None
-    if token is not None:
-        (price_sats, amount_token, price_usd, price_btc) = oshi.fetch(token.lower())
-        price_sats = "{:=,}".format(price_sats)
-        message = f"Price per {token.upper()}: {price_sats} sats. \n\n"
-        message += f'Pack : {amount_ordi} {token.upper()} for {price_usd} = {price_btc} BTC'
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
-    
-    else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the name of the brc-20 token you want to get !")
-
-
-    
-
->>>>>>> refs/remotes/origin/main
 async def btcDevEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
@@ -417,20 +386,11 @@ async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_btcSupply = f"/btcSupply : Give the actual Bitcoin supply and its value. 🤑 \n "
     message_btcPublicEngagement = f"/btcPublicEngagement : Measure of interest took from coingecko📱\n"
     message_btcDevEngagement = f"/btcDevEngagement: Some measure from github `bitcoin` repo 😼 \n "
-    message_oshi = "/oshi : Fetch Last price of OSHI from unisat.\n " #TODO : Details OSHI project
-    message_ordi = "/ordi : Fetch last price of ORDI from unisat. "#TODO : Tell the story about ORDI
-<<<<<<< HEAD
+    message_oshi = "/oshi : Fetch Last price of OSHI from unisat."
 
     message_help += sep2 + message_btc2eur + message_eur2btc + message_btc2sats + message_sats2btc + message_sats2eur + message_eur2sats + sep3 + message_codePrices+message_codeConvert + \
         message_codeBot +sep_vol + message_major_volumes +message_kraken_volumes + message_binance_volumes + sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + \
-        message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + message_oshi + message_ordi
-=======
-    message_getlastprice = "/getlastprice `token`: Fetch the price of `token` which should be a valid brc-20 sold on Unisat. It will give you the less expensive pack from Unisat Marketplace. \n"
-
-    message_help += sep2 + message_btc2eur + message_eur2btc + message_btc2sats + message_sats2btc + message_sats2eur + message_eur2sats + sep3 + message_codePrices+message_codeConvert + \
-        message_codeBot +sep_vol + message_major_volumes +message_kraken_volumes + message_binance_volumes + sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + \
-        message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + message_oshi + message_ordi + message_getlastprice
->>>>>>> refs/remotes/origin/main
+        message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + message_oshi 
     message_help += "/help : Display this message 💬 \n"
 
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_help)
@@ -465,12 +425,6 @@ if __name__ == '__main__':
         'btcDevEngagement', btcDevEngagement)
 
     oshi_handler = CommandHandler('oshi', oshi_)
-    ordi_handler = CommandHandler('ordi', ordi) 
-<<<<<<< HEAD
-=======
-    getlastprice_handler = CommandHandler('getlastprice', getlastprice)
-
->>>>>>> refs/remotes/origin/main
     help_handler = CommandHandler('help', helper)
 
     application.add_handler(start_handler)
@@ -483,11 +437,6 @@ if __name__ == '__main__':
     application.add_handler(btcPublicEngagement_handler)
     application.add_handler(btcDevEngagement_handler)
     application.add_handler(oshi_handler)
-    application.add_handler(ordi_handler)
-<<<<<<< HEAD
-=======
-    application.add_handler(getlastprice_handler)
->>>>>>> refs/remotes/origin/main
 
     application.add_handler(eur2btc_handler)
     application.add_handler(btc2eur_handler)
@@ -506,4 +455,3 @@ if __name__ == '__main__':
 
 
     application.run_polling()
-

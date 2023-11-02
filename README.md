@@ -116,6 +116,10 @@ For the next, I have to think about a cointainerisation with `Docker` to be able
    - if someone type a conversion command without amount : `/sats2eur` send a message to say : 'Enter the amount to convert' and after then make the conversion ;
 - Improve HTML treatment which is not good for `/btcInfo` for example ;
 - Make a containerisation of this code with `Docker`.
+<<<<<<< HEAD
+=======
+- Create a lightning invoice for `/support` command.
+>>>>>>> refs/remotes/origin/main
 
 
 # Contact
