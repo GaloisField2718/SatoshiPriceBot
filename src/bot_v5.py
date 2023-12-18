@@ -133,18 +133,18 @@ async def eur2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def btc2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	
-    try : 
-        btc_input = float(context.args[0]) if context.args else None
-	    sat = 10**8
-	    if btc_input is not None:
-	        sat_conversion = "{:=,}".format(convert.satsbtc(btc_input, 1))
-	        btc_input = "{:=,}".format(btc_input)
-	        message = f"{btc_input} BTC = {sat_conversion} sats"
-	        await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-	    else:
-	        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in sats! Enter /btc2sats your_btc_amount.")
+    try :
+       btc_input = float(context.args[0]) if context.args else None
+       sat = 10**8
+       if btc_input is not None:
+	       sat_conversion = "{:=,}".format(convert.satsbtc(btc_input, 1))
+	       btc_input = "{:=,}".format(btc_input)
+	       message = f"{btc_input} BTC = {sat_conversion} sats"
+	       await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+       else:
+           await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in sats! Enter /btc2sats your_btc_amount.")
 
-    except Exception as e: 
+    except Exception as e:
         logging.error(f"Error during conversion {e}")
         message_error = f"Error during conversion {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
@@ -187,7 +187,8 @@ async def eur2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	        await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 	    else:
 	        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of euros you want to transform in sats! Enter /eur2sats your_eur_amount.")
-	except Exception as e: 
+
+    except Exception as e:
         logging.error(f"Error during conversion {e}")
         message_error = f"Error during conversion {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
