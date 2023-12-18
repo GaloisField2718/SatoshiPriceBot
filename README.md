@@ -48,7 +48,7 @@ pipenv shell
 After this, like `npm` run :
 
 ```
-pipenv install
+pipenv install --ignore-pipfile
 ```
 
 It will install every required dependancies.
