@@ -107,15 +107,26 @@ It's a pleasure to think about possible improvements.
 
 For the next, I have to think about a cointainerisation with `Docker` to be able to run on any server, very quickly ; without manual installation.
 
+I integrated fees from (mempool.space)[https://mempool.space]. 
+
 ## TODO
 
-- Put a gif or related to `/oshi` message ; Fetch the loading indication to know where are we.
-- Improve volumes visualisation ;
+- Fetch prices from (Atomical marketplace)[https://atomicalmarket.com] like BRC-20.
+    - I tried to copy paste the code for Unisat but it's not working like this. 
+    - It should be quite easy !
+
+- Use API of unisat instead of scrapping their website.
+
+- Add data about token from (unisat)[https://unisat.io]
+
 - Improve UX with :
    - making recommandations of available commands ;
    - if someone type a conversion command without amount : `/sats2eur` send a message to say : 'Enter the amount to convert' and after then make the conversion ;
+
 - Improve HTML treatment which is not good for `/btcInfo` for example ;
+
 - Make a containerisation of this code with `Docker`.
+
 - Create a lightning invoice for `/support` command.
 
 
@@ -126,3 +137,4 @@ For the next, I have to think about a cointainerisation with `Docker` to be able
 
 [📩 mail](galoisfield2718@gmail.com)
 
+[🤖 The Bot](https://t.me/SatoshiPriceBot)
