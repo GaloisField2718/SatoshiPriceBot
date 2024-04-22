@@ -98,26 +98,22 @@ And... That's it. You created your first new command in this bot.
 
 ## Updates
 
-The last update changed fetch prices. Before I used `python-binance`, but now I use [CoinGecko API](https://www.coingecko.com/fr/api/documentation).
+Information about [Runes](https://docs.ordinals.com/runes.html) from [Unisat runes market](https://unisat.io/runes/market). Floor selling order and marketcap based on current floor price on Unisat. 
 
-I added, many different information about Bitcoin from CoinGecko.
-
-Please be free to update this repo and chat with me about improvement proposals. It's a small compilation of diverse code that I can did over the time in my coding journey. 
+Be free to update this repo and chat with me about improvement proposals. It's a small compilation of diverse code that I can did over the time in my coding journey. 
 It's a pleasure to think about possible improvements. 
 
-For the next, I have to think about a cointainerisation with `Docker` to be able to run on any server, very quickly ; without manual installation.
-
-I integrated fees from [mempool.space](https://mempool.space). 
+Next goal should be to handle errors which can occurs due to multiple browser and get calls. Display information on user side. 
 
 ## TODO
+
+- Important: Handle errors during browser and requests calls. Provide a feedback to the user about the error. Provide tracking into loggin to be able to help the user if there is a problem in transportation or server side. 
 
 - Fetch prices from [Atomical marketplace](https://atomicalmarket.com) like BRC-20.
     - I tried to copy paste the code for Unisat but it's not working like this. 
     - It should be quite easy !
 
 - Use API of unisat instead of scrapping their website.
-
-- Add data about token from [unisat](https://unisat.io)
 
 - Improve UX with :
    - making recommandations of available commands ;
