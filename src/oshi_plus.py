@@ -21,7 +21,8 @@ def fetch(token):
     price_btc = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     price_btc = driver.find_element(By.XPATH, xpath)
     
-    price_sats = int(price_sats.text)
+    price_sats = (price_sats.text).replace(',', '')
+    price_sats = int(price_sats)
     amount_oshi = (amount_oshi.text).replace(',','')
     amount_oshi = int(amount_oshi)
     price_usd = price_usd.text

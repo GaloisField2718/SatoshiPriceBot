@@ -1,3 +1,5 @@
+#@author: GaloisField
+#@update: Add Runes selling infos from unisat.
 # ---------------------------------------------------------
 #                   IMPORT
 # ---------------------------------------------------------
@@ -29,7 +31,8 @@ import convert
 from datetime import datetime, timedelta, timezone
 import oshi_plus as oshi
 from fees import Fees
-
+#@v6
+import fetch_runes
 
 import os
 
@@ -131,7 +134,7 @@ async def eur2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
 
 
-async def btc2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def btc2sat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	
     try :
        btc_input = float(context.args[0]) if context.args else None
@@ -142,14 +145,14 @@ async def btc2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	       message = f"{btc_input} BTC = {sat_conversion} sats"
 	       await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
        else:
-           await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in sats! Enter /btc2sats your_btc_amount.")
+           await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in sat! Enter /btc2sat your_btc_amount.")
 
     except Exception as e:
         logging.error(f"Error during conversion {e}")
         message_error = f"Error during conversion {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
 
-async def sats2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def sat2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
     # Manage float user entry instead of int
         sats_input = int(context.args[0]) if context.args else None
@@ -161,10 +164,10 @@ async def sats2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message = f"{sats_input} sats = {btc_conversion} BTC"
             await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     except ValueError:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="The amount of satoshis (sats) is an INTEGER ! Enter /sats2btc your_sats_amount.")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="The amount of satoshis (sat) is an INTEGER ! Enter /sat2btc your_sat_amount.")
 
 
-async def sats2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def sat2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
     # Manage float user entry instead of int
         sats_input = int(context.args[0]) if context.args else None
@@ -174,10 +177,10 @@ async def sats2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message = f"{sats_input} sats = {res} €"
             await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     except ValueError:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of satoshis (sats) you want to transform in euros! The amount is an INTEGER ! Take care. Enter /sats2eur your_sats_amount.")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of satoshis (sats) you want to transform in euros! The amount is an INTEGER ! Take care. Enter /sat2eur your_sats_amount.")
 
 
-async def eur2sats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def eur2sat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try : 
 	    eur_input = float(context.args[0]) if context.args else None
 	    if eur_input is not None:
@@ -226,33 +229,6 @@ async def max_fees(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text=error_message)
 
 
-
-
-# ---------------------------------------------------------
-#                  DISPLAY CODE
-# ---------------------------------------------------------
-
-
-async def codeFetchPrices(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    with open('./fetch_prices.py', 'r') as f:
-        lines = f.readlines()
-    message = lines
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-
-async def codeConvert(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    with open('./convert.py', 'r') as f:
-        lines = f.readlines()
-    message = lines
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-
-
-async def codeBot(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    with open('./bot.py', 'r') as f:
-        lines = f.readlines()
-    message = lines
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 # ---------------------------------------------------------
 #               VOLUME COMMANDS
@@ -307,8 +283,54 @@ async def kraken_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_kraken)
 
+# ---------------------------------------------------------
+#               RUNES COMMANDS
+# ---------------------------------------------------------
 
+async def runefloor(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    nb_args = len(context.args)
+    if nb_args == 0:
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Enter at least one Rune name (whitout space). You can enter list with spacing each names.")
+    else:
+        for index in range(nb_args):
+            rune = context.args[index]
+            rune_name = fetch_runes.parse_rune_name(rune)
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=f"🔍 I will ask to unisat to get the lastest floor about {rune_name}. Please wait a second...")
+            message = fetch_runes.floor_listing(rune)
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+            await context.bot.send_message(chat_id=update.effective_chat.id, text = f"For all listing: https://unisat.io/runes/market?tick={rune_name.replace('•','%E2%80%A2')}")
 
+async def runemc(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    nb_args = len(context.args)
+    if nb_args == 0:
+         await context.bot.send_message(chat_id=update.effective_chat.id, text="Enter at least one Rune name (whitout space). You can enter list with spacing each names.")
+    elif nb_args == 1:
+        rune = context.args[0]
+        rune_name = fetch_runes.parse_rune_name(rune)
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"🔍 I will ask to unisat to get last floor about {rune_name}. Please wait a second...")
+        (btc_marketcap, usd_marketcap) = fetch_runes.get_marketcap(rune)
+        message = f"{rune_name}\n"
+        message += f"${'{:,}'.format(usd_marketcap)} = {btc_marketcap}BTC"
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        await context.bot.send_message(chat_id=update.effective_chat.id, text = f"For all listing: https://unisat.io/runes/market?tick={rune_name.replace('•','%E2%80%A2')}")
+
+    else:
+        runes = [context.args[index] for index in range(nb_args)]
+        runes_name = [fetch_runes.parse_rune_name(rune) for rune in runes]
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=f"🔍 I will ask to unisat to get last floor about {runes_name}. Please wait a second...")
+        for rune_name in runes_name:
+            try:
+                (btc_marketcap, usd_marketcap) = fetch_runes.get_marketcap(rune_name)
+            except:
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=f"An error happening. Couldn't get marketcap from unisat. Look about the existence of your rune. Maybe it's because there is no listing.")
+
+            message = f"\t \t 👉{rune_name}👈\n"
+            message += f"👉 ${'{:,}'.format(usd_marketcap)} = {btc_marketcap}BTC"
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
+            await context.bot.send_message(chat_id=update.effective_chat.id, text = f"For all listing: https://unisat.io/runes/market?tick={rune_name.replace('•','%E2%80%A2')}")
+
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="👍 Done!🚀")
+        
 # ---------------------------------------------------------
 #               GENERAL COMMANDS
 # ---------------------------------------------------------
@@ -471,15 +493,17 @@ async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message_help = f"Here you can find details of all available commands 🖲️ : \n\n"
+    message_help = "Here you can find details of all available commands 🖲️ : \n\n"
+    message_update = "\n  📣 NEW UPDATE --> RUNES INFO FROM UNISAT! See RUNES section\n \n "    
     sep2 = "\n --- 🔄  CONVERSION SATS <-> BTC <-> EUR  --- \n \n"
-    reminder_numbers = "\n I WANT TO REMIND THAT DECIMALS NUMBERS IN ENGLISH ARE WRITTEN WITH A DOT : 100.87 ! I STILL DON'T MANAGE NUMBERS WITH : 100,87 \n"
+    
+    remind_numbers = "\n I WANT TO REMIND THAT DECIMALS NUMBERS IN ENGLISH ARE WRITTEN WITH A DOT : 100.87 ! I STILL DON'T MANAGE NUMBERS WITH : 100,87 \n"
     message_btc2eur = f"/btc2eur : Enter the command followed by the amount of btc you want to convert in eur. Ex : /btc2eur 0.1 \n"
     message_eur2btc = f"/eur2btc : Enter the command followed by the amount of euros you want to convert in btc. Ex : /eur2btc 10000 \n"
-    message_btc2sats = f"/btc2sats : Enter the command followed by the amount of btc you want to convert in sats. Ex : /btc2sats 0.1 \n"
-    message_sats2btc = f"/sats2btc : Enter the command followed by the amount of sats you want to convert in btc. Ex : /sats2btc \n"
-    message_sats2eur = "/sats2eur : Enter the command followed by the amount of sats you want to convert in eur. Ex : /sats2eur 10000 \n "
-    message_eur2sats = "/eur2sats : Enter the command followed by the amount of eur you want to convert in sats. Ex : /eur2sats 100 \n "
+    message_btc2sat = f"/btc2sat : Enter the command followed by the amount of btc you want to convert in sats. Ex : /btc2sat 0.1 \n"
+    message_sat2btc = f"/sat2btc : Enter the command followed by the amount of sats you want to convert in btc. Ex : /sat2btc \n"
+    message_sat2eur = "/sat2eur : Enter the command followed by the amount of sats you want to convert in eur. Ex : /sat2eur 10000 \n "
+    message_eur2sat = "/eur2sat : Enter the command followed by the amount of eur you want to convert in sats. Ex : /eur2sat 100 \n "
 
     sep_fees = "\n ---- FEES ON THE MEMPOOL  ------\n\n"
     message_fees = f"/fees : Get general fees information from mempool.space. Standalone command 🖲️\n "
@@ -501,23 +525,20 @@ async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_btcPublicEngagement = f"/btcPublicEngagement : Measure of interest took from coingecko📱\n"
     message_btcDevEngagement = f"/btcDevEngagement: Some measure from github `bitcoin` repo 😼 \n "
 
-
-    sep3 = "\n ---  DISPLAY CODE USED  --- \n \n"
-    message_codePrices = f"/codeFetchPrices : Give the code to fetch prices. It's mainly to develop for myself but you can check the code if you want 😉 \n"
-    message_codeConvert = f"/codeConvert : Give the code to make every conversion used here. 💱\n "
-    message_codeBot = f"/codeBot : Give my code. 🤖 Unfortunately, my code is too long to be displayed. Feel free to check my description to have more details.\n"
-
     sep_vol = "\n ----  VOLUMES DATA  ------- \n \n"
     message_major_volumes = f"/majorVolumes : Provide information about most traded BTC pairs with the exchange 💹 \n"
     message_kraken_volumes = "/kraken : Provide information about BTC pairs traded on Kraken 🦈 \n "
     message_binance_volumes = "/binance : Provide information about BTC pairs traded in Binance 🅱️ \n"
 
-        
-    message_help += sep2 + remind_numbers + message_btc2eur + message_eur2btc + message_btc2sats + message_sats2btc + message_sats2eur + message_eur2sats + sep_fees + message_fees + message_max_fees + \
+    sep_rune = "\n ----  RUNES INFORMATION  ------- \n \n" 
+    message_runefloor = "/runefloor: Provide details about floor price listing on Unisat. You can find the marketcap assiociated with this price ($ and BTC). USAGE:\n 1. /runefloor your.rune.name\n 2. /runefloor first.rune second.rune. \n Note: You can •, . or unicode. [Needs improvments on error handling] \n"
+    message_runemc = "/runemc: Provide rune name and marketcap only. Shorter than /runefloor! USAGE:\n 1. /runemc your.rune.name\n 2. /runemc your_rune.1 your.rune.2 ...\n\n"
+
+    message_help += message_update + sep2 + remind_numbers + message_btc2eur + message_eur2btc + message_btc2sat + message_sat2btc + message_sat2eur + message_eur2sat + sep_fees + message_fees + message_max_fees + \
     sep_brc20 + message_oshi + message_ordi + message_getlastprice + message_support + \
     sep_vol + message_major_volumes + message_kraken_volumes + message_binance_volumes + message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + \
-    sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + \
-    sep3 + message_codePrices+message_codeConvert + message_codeBot + message_support 
+    sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + message_support + \
+    sep_rune + message_runefloor + message_runemc 
 
     message_help += "/help : Display this message 💬 \n"
 
@@ -528,17 +549,13 @@ if __name__ == '__main__':
 
     eur2btc_handler = CommandHandler('eur2btc', eur2btc)
     btc2eur_handler = CommandHandler('btc2eur', btc2eur)
-    btc2sats_handler = CommandHandler('btc2sats', btc2sats)
-    sats2btc_handler = CommandHandler('sats2btc', sats2btc)
-    sats2eur_handler = CommandHandler('sats2eur', sats2eur)
-    eur2sats_handler = CommandHandler('eur2sats', eur2sats)
+    btc2sat_handler = CommandHandler('btc2sat', btc2sat)
+    sat2btc_handler = CommandHandler('sat2btc', sat2btc)
+    sat2eur_handler = CommandHandler('sat2eur', sat2eur)
+    eur2sat_handler = CommandHandler('eur2sat', eur2sat)
 
     fees_handler = CommandHandler('fees', fees)
     max_fees_handler = CommandHandler('maxfees', max_fees)
-
-    codeConvert_handler = CommandHandler('codeConvert', codeConvert)
-    codeBot_handler = CommandHandler('codeBot', codeBot)
-    codePrices_handler = CommandHandler('codePrices', codeFetchPrices)
 
     majorVolumes_handler = CommandHandler('majorVolumes', major_volumes)
     krakenVolumes_handler = CommandHandler('kraken', kraken_volumes)
@@ -555,12 +572,15 @@ if __name__ == '__main__':
     btcDevEngagement_handler = CommandHandler(
         'btcDevEngagement', btcDevEngagement)
 
+    runefloor_handler = CommandHandler('runefloor', runefloor)
+    runemc_handler = CommandHandler('runemc', runemc)
+
     oshi_handler = CommandHandler('oshi', oshi_)
     ordi_handler = CommandHandler('ordi', ordi)
     getlastprice_handler = CommandHandler('getlastprice', getlastprice)
     help_handler = CommandHandler('help', helper)
     support_handler = CommandHandler('support', support)
-
+    
     application.add_handler(start_handler)
     application.add_handler(help_handler)
     application.add_handler(price_handler)
@@ -574,20 +594,19 @@ if __name__ == '__main__':
     application.add_handler(ordi_handler)
     application.add_handler(getlastprice_handler)
     application.add_handler(support_handler)
+    
+    application.add_handler(runefloor_handler)
+    application.add_handler(runemc_handler)
 
     application.add_handler(eur2btc_handler)
     application.add_handler(btc2eur_handler)
-    application.add_handler(btc2sats_handler)
-    application.add_handler(sats2btc_handler)
-    application.add_handler(sats2eur_handler)
-    application.add_handler(eur2sats_handler)
+    application.add_handler(btc2sat_handler)
+    application.add_handler(sat2btc_handler)
+    application.add_handler(sat2eur_handler)
+    application.add_handler(eur2sat_handler)
 
     application.add_handler(fees_handler)
     application.add_handler(max_fees_handler)
-
-    application.add_handler(codePrices_handler)
-    application.add_handler(codeConvert_handler)
-    application.add_handler(codeBot_handler)
 
     application.add_handler(majorVolumes_handler)
     application.add_handler(krakenVolumes_handler)
