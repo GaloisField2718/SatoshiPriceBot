@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 ###########################################################
 
 from bs4 import BeautifulSoup
+import json
 import requests as req
 
 def parse_rune_name(rune):
@@ -30,6 +31,17 @@ def get_supply(rune):
     supply_text = soup.find('dt', string='supply').find_next_sibling('dd').text
     supply_float = float(supply_text.split()[0].replace(',', ''))
     return supply_float
+
+def get_info(rune):
+    rune_name = parse_rune_name(rune)
+    url = f'http://94.16.123.98:8080/rune/{rune_name}'
+    response = req.get(url, headers={"Accept":"application/json"})
+    rune_info = json.loads(response.text)
+    inscription = rune_info['parent']
+    rune_id = rune_info['id']
+    mintable = rune_info['mintable']
+    rune_info = rune_info['entry']
+    return (inscription, rune_id, mintable, rune_info)
 
 def sat2btc(sats):
     return sats/(10**8)
