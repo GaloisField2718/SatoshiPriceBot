@@ -366,6 +366,7 @@ async def runemc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     rand = random.randint(0, 1)
     message_start = f"Welcome on SatoshiPriceBot 👋, \n Here you can find different information about bitcoin with /btcInfo command. You can also make conversions between btc and euro or btc and satoshis. \n To have the full commands list please try /help.\n For any suggestions you can contact @Dev_block. \n See you 🔜 in the /help message.\n \n 👉 If you want to help the hosting 🎛️ of the bot you can send some sats at 💶bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k 👈."
+    logging.info(f"Call `start` from {update.effective_chat.id}.\n Update: {update}")
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_start)
 
 
