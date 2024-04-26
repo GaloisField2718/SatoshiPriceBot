@@ -32,6 +32,37 @@ def get_supply(rune):
     supply_float = float(supply_text.split()[0].replace(',', ''))
     return supply_float
 
+def parse_rune_info(rune_info):
+    # Parse the JSON data
+    data = rune_info['entry']
+
+    # Construct the formatted message
+    formatted_message = (
+        f"Spaced Rune: {data['spaced_rune']}\n"
+        f"📸 Inscription: https://ordinals.com/content/{rune_info['parent']} \n"
+        f"Id: {rune_info['id']} \n"
+        f"Mintable: {'✅' if rune_info['mintable'] else '❌'}\n"
+        f"\n \t\t ---- GENERAL INFO ---\n\n"
+        f"Block: {data['block']}\n"
+        f"Symbol: {data['symbol']}\n"
+        f"Number: {data['number']}\n"
+        f"Timestamp: {data['timestamp']}\n"
+        f"Burned: {data['burned']}\n"
+        f"Mints: {data['mints']}\n"
+        f"Premine: {data['premine']}\n"
+        f"Divisibility: {data['divisibility']}\n"
+        f"Etching: {data['etching']}\n"
+        f"Turbo: {'✅' if data['turbo'] else '❌'}\n"
+        "Terms:\n"
+        f"  - Amount: {data['terms']['amount']}\n"
+        f"  - Cap: {data['terms']['cap']}\n"
+        f"  - Height: {data['terms']['height']}\n"
+        f"  - Offset: {data['terms']['offset']}"
+    )
+
+    return formatted_message
+
+
 def get_info(rune):
     rune_name = parse_rune_name(rune)
     url = f'http://94.16.123.98:8080/rune/{rune_name}'

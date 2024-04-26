@@ -294,24 +294,12 @@ async def runeinfo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter a Rune name to get info. You need to use '.' or '•'. No white space. You can enter a list of Runes with space between Rune.\n")
     elif nb_args == 1:
         rune = context.args[0]
-        rune_name = fetch_runes.parse_rune_name(rune)
-        rune_infos = fetch_runes.get_info(rune_name)
-        message = f"{rune_name}: \n"
-        message += f"Image inscription: {rune_infos[0]}\n"
-        message += f"Id: {rune_infos[1]}\n"
-        message += f"Mintable: {rune_infos[2]}\n"
-        message += f"General info: {json.dumps(rune_infos[3])}\n"
+        message = fetch_runes.info_message(rune)        
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     else:
         for index in range(nb_args):
             rune = context.args[index]
-            rune_name = fetch_runes.parse_rune_name(rune)
-            rune_infos = fetch_runes.get_info(rune_name)
-            message = f"{rune_name}: \n"
-            message += f"Image inscription: {rune_infos[0]}\n"
-            message += f"Id: {rune_infos[1]}\n"
-            message += f"Mintable: {rune_infos[2]}\n"
-            message += f"General info: {json.dumps(rune_infos[3])}\n"
+            message = fetch_runes.info_message(rune) 
             await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         await context.bot.send_message(chat_id:=update.effective_chat.id, text="👍 Done! 🚀")
 
