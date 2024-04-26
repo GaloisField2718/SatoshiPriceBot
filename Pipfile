@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 python-telegram-bot = "*"
+<<<<<<< HEAD
 numpy = "*"
 datetime = "*"
 python-dotenv = "*"
@@ -12,6 +13,12 @@ requests = "*"
 selenium = "*"
 chromedriver-binary = "==115.0.5790.170"
 qrcode = "*"
+=======
+python-dotenv = "*"
+requests = "*"
+selenium = "*"
+bs4 = "*"
+>>>>>>> main
 
 [dev-packages]
 

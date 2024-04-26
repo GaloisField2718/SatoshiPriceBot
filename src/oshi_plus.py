@@ -41,8 +41,13 @@ def fetch(token):
 
 =======
     
+<<<<<<< HEAD
     price_sats = int(price_sats.text)
 >>>>>>> refs/remotes/origin/main
+=======
+    price_sats = (price_sats.text).replace(',', '')
+    price_sats = int(price_sats)
+>>>>>>> main
     amount_oshi = (amount_oshi.text).replace(',','')
     amount_oshi = int(amount_oshi)
     price_usd = price_usd.text
