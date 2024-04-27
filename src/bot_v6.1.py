@@ -43,11 +43,27 @@ import os
 config = dotenv_values(".env")
 key = config['KEY']
 
+# Define a custom filter class to exclude log records with specific messages
+class ExcludeGetUpdatesFilter(logging.Filter):
+    def filter(self, record):
+        # Print the log message for debugging
+        print(record.getMessage())
+        return f"HTTP Request: POST https://api.telegram.org/bot{key}/getUpdates \"HTTP/1.1 200 OK\"" not in record.getMessage()
+
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
+# Get the root logger
+logger = logging.getLogger()
+
+# Create an instance of the custom filter class
+exclude_get_updates_filter = ExcludeGetUpdatesFilter()
+
+# Add the custom filter to exclude getUpdates messages
+logger.addFilter(exclude_get_updates_filter)
 
 # ---------------------------------------------------------
 #                   UTILS
@@ -73,11 +89,11 @@ def display_format(major_volumes):
     return major_volumes_str
 
 
-
+#---------------------------------------------------------
 #---------------------------------------------------------
 #                   BOT COMMANDS
 #---------------------------------------------------------
-
+#---------------------------------------------------------
 
 # ---------------------------------------------------------
 #                   CONVERSION
@@ -86,7 +102,7 @@ def display_format(major_volumes):
 
 
 async def btc2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        
+    logging.info("btc2eur called \n")        
     try :
         user_input = float(context.args[0]) if context.args else None
         if user_input is not None:
@@ -111,13 +127,13 @@ async def btc2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     except Exception != ValueError as e: 
-        logging.error(f"Error during conversion {e}")
+        logging.error(f"Error during conversion btc2eur: {e} in {update}\n")
         message_error = f"Error during conversion {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
 
 
 async def eur2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    
+    logging.info("eur2btc called \n")
     try : 
         user_input = float(context.args[0]) if context.args else None
         if user_input is not None:
@@ -130,30 +146,29 @@ async def eur2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in Euro! Enter /eur2btc your_amount.")
 
     except Exception as e: 
-        logging.error(f"Error during conversion {e}")
+        logging.error(f"Error during conversion eur2btc: {e} in {update}\n")
         message_error = f"Error during conversion {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
 
 
 async def btc2sat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-	
-    try :
-       btc_input = float(context.args[0]) if context.args else None
-       sat = 10**8
-       if btc_input is not None:
-	       sat_conversion = "{:=,}".format(convert.satsbtc(btc_input, 1))
-	       btc_input = "{:=,}".format(btc_input)
-	       message = f"{btc_input} BTC = {sat_conversion} sats"
-	       await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-       else:
-           await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in sat! Enter /btc2sat your_btc_amount.")
-
+    try:
+        btc_input = float(context.args[0]) if context.args else None
+        sat = 10**8
+        if btc_input is not None:
+            sat_conversion = "{:=,}".format(convert.satsbtc(btc_input, 1))
+            btc_input = "{:=,}".format(btc_input)
+            message = f"{btc_input} BTC = {sat_conversion} sats"
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        else:
+            await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of bitcoin you want to transform in sat! Enter /btc2sat your_btc_amount.")
     except Exception as e:
-        logging.error(f"Error during conversion {e}")
+        logging.error(f"Error during conversion btc2sat: {e} in {update}\n")
         message_error = f"Error during conversion {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
 
 async def sat2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("sat2btc called \n")
     try:
     # Manage float user entry instead of int
         sats_input = int(context.args[0]) if context.args else None
@@ -165,10 +180,12 @@ async def sat2btc(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message = f"{sats_input} sats = {btc_conversion} BTC"
             await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     except ValueError:
+        logging.info("ValueError raised sat2btc in {update}\n")
         await context.bot.send_message(chat_id=update.effective_chat.id, text="The amount of satoshis (sat) is an INTEGER ! Enter /sat2btc your_sat_amount.")
 
 
 async def sat2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("sat2eur called \n")
     try:
     # Manage float user entry instead of int
         sats_input = int(context.args[0]) if context.args else None
@@ -178,10 +195,12 @@ async def sat2eur(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message = f"{sats_input} sats = {res} €"
             await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     except ValueError:
+        logging.info("ValueError raised sat2eur in {update}\n")
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of satoshis (sats) you want to transform in euros! The amount is an INTEGER ! Take care. Enter /sat2eur your_sats_amount.")
 
 
 async def eur2sat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("eur2sat called \n")
     try : 
 	    eur_input = float(context.args[0]) if context.args else None
 	    if eur_input is not None:
@@ -193,7 +212,7 @@ async def eur2sat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 	        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter the amount of euros you want to transform in sats! Enter /eur2sats your_eur_amount.")
 
     except Exception as e:
-        logging.error(f"Error during conversion {e}")
+        logging.error(f"Error during conversion eur2sat: {e} in {update}\n")
         message_error = f"Error during conversion {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message_error)
 
@@ -205,19 +224,21 @@ async def eur2sat(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def fees(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("fees called \n")
     try : 
         fees = Fees()
         message = f"Mempool fees 🚀 : \n No priority : {fees.no_priority}, Low priority : {fees.low_fees}, Mid priority : {fees.medium_fees}, High priority : {fees.max_fees} "
         await context.bot.send_message(chat_id= update.effective_chat.id, text=message)
 
     except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+        logging.error(f"An unexpected error occurred in fees: {e} with {update}\n")
         error_message = f"A fetch error happened : {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=error_message)
 
 
 # This is to catch max fees in an easy copying format
 async def max_fees(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("maw_fees called \n")
     try : 
         fees = Fees()
         max_fees = fees.get_max_fees()
@@ -225,7 +246,7 @@ async def max_fees(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id= update.effective_chat.id, text=message)
 
     except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+        logging.error(f"An unexpected error occurred in max_fees: {e} with {update}")
         error_message = f"A fetch error happened : {e}"
         await context.bot.send_message(chat_id=update.effective_chat.id, text=error_message)
 
@@ -236,6 +257,7 @@ async def max_fees(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ---------------------------------------------------------
 
 async def major_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("major_volumes called\n")
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
     data = fetcher.get_coin_data()
@@ -252,6 +274,7 @@ async def major_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def binance_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("binance_volumes called \n")
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
     data = fetcher.get_coin_data()
@@ -269,6 +292,7 @@ async def binance_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def kraken_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("kraken_volumes called \n")
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
     data = fetcher.get_coin_data()
@@ -290,33 +314,23 @@ async def kraken_volumes(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def runeinfo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     nb_args = len(context.args)
+    logging.info(f"runeinfo called with {nb_args} arguments\n")
     if nb_args == 0:
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter a Rune name to get info. You need to use '.' or '•'. No white space. You can enter a list of Runes with space between Rune.\n")
     elif nb_args == 1:
         rune = context.args[0]
-        rune_name = fetch_runes.parse_rune_name(rune)
-        rune_infos = fetch_runes.get_info(rune_name)
-        message = f"{rune_name}: \n"
-        message += f"Image inscription: {rune_infos[0]}\n"
-        message += f"Id: {rune_infos[1]}\n"
-        message += f"Mintable: {rune_infos[2]}\n"
-        message += f"General info: {json.dumps(rune_infos[3])}\n"
+        message = fetch_runes.info_message(rune)        
         await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     else:
         for index in range(nb_args):
             rune = context.args[index]
-            rune_name = fetch_runes.parse_rune_name(rune)
-            rune_infos = fetch_runes.get_info(rune_name)
-            message = f"{rune_name}: \n"
-            message += f"Image inscription: {rune_infos[0]}\n"
-            message += f"Id: {rune_infos[1]}\n"
-            message += f"Mintable: {rune_infos[2]}\n"
-            message += f"General info: {json.dumps(rune_infos[3])}\n"
+            message = fetch_runes.info_message(rune) 
             await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         await context.bot.send_message(chat_id:=update.effective_chat.id, text="👍 Done! 🚀")
 
 async def runefloor(update: Update, context: ContextTypes.DEFAULT_TYPE):
     nb_args = len(context.args)
+    logging.info(f"runefloor called with {nb_args} arguments \n")
     if nb_args == 0:
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Enter at least one Rune name (whitout space). You can enter list with spacing each names.")
     else:
@@ -330,6 +344,7 @@ async def runefloor(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def runemc(update: Update, context: ContextTypes.DEFAULT_TYPE):
     nb_args = len(context.args)
+    logging.info(f"runemc was called with {nb_args} arguments: {update}\n")
     if nb_args == 0:
          await context.bot.send_message(chat_id=update.effective_chat.id, text="Enter at least one Rune name (whitout space). You can enter list with spacing each names.")
     elif nb_args == 1:
@@ -366,11 +381,12 @@ async def runemc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     rand = random.randint(0, 1)
     message_start = f"Welcome on SatoshiPriceBot 👋, \n Here you can find different information about bitcoin with /btcInfo command. You can also make conversions between btc and euro or btc and satoshis. \n To have the full commands list please try /help.\n For any suggestions you can contact @Dev_block. \n See you 🔜 in the /help message.\n \n 👉 If you want to help the hosting 🎛️ of the bot you can send some sats at 💶bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k 👈."
-    logging.info(f"Call `start` from {update.effective_chat.id}.\n Update: {update}")
+    logging.info(f"Call `start` from {update.message.chat}.\n Update: {update}\n")
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_start)
 
 
 async def btcPrice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("btcPrice called")
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
     data = fetcher.get_coin_data()
@@ -480,6 +496,7 @@ async def ordi(update: Update, context: ContextTypes.DEFAULT_TYPE) :
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
 
 async def getlastprice(update: Update, context: ContextTypes.DEFAULT_TYPE): #TODO: Error management if name isn't catched or other issues with chrome browser
+    logging.info("getlastprice called for {context.args[0]}\n")
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Please wait it's loading ....")
     token = context.args[0] if context.args else None
     if token is not None:
@@ -512,6 +529,7 @@ async def btcDevEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_dev)
 
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info(f"support called by {update.message.chat.username}\n")
     message = "You want to support the hosting of the bot ⁉️ You can send some sats at 👉bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k👈.\n I'm hosted at Hostinger and payment can be done in Bitcoin ! So, your money will directly go to Hostinger 🙃. "
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     pic = os.path.join(os.getcwd(), 'qr_generator', 'qr_myaddress.png')
@@ -571,6 +589,7 @@ async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sep_rune + message_runeinfo + message_runefloor + message_runemc 
 
     message_help += "/help : Display this message 💬 \n"
+    logging.info(f"help called {update}\n")
 
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_help)
 

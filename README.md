@@ -65,7 +65,7 @@ KEY=numbers:Letters
 After installation, you can run your bot with : 
 
 ```
-cd src && python3 bot_v2.py
+cd src && python3 bot_v6.1.py
 ```
 
 Warning be sure to run `pipenv shell` if you are using a new terminal session.
@@ -100,7 +100,7 @@ And... That's it. You created your first new command in this bot.
 
 Information about [Runes](https://docs.ordinals.com/runes.html) from [Unisat runes market](https://unisat.io/runes/market). Floor selling order and marketcap based on current floor price on Unisat. 
 
-Be free to update this repo and chat with me about improvement proposals. It's a small compilation of diverse code that I can did over the time in my coding journey. 
+Be free to update this repo and chat with me about improvement proposals. It's a small compilation of diverse code that I did over the time in my coding journey. 
 It's a pleasure to think about possible improvements. 
 
 Next goal should be to handle errors which can occurs due to multiple browser and get calls. Display information on user side. 
