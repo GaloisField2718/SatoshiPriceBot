@@ -11,7 +11,6 @@ def fetch(token):
     driver = webdriver.Chrome(options=options)
     driver.get(f'https://unisat.io/market/brc20?tick={token}')
     wait = WebDriverWait(driver, 10)
-<<<<<<< HEAD
     wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
     price_sats = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "price")]')
     try :
@@ -22,32 +21,23 @@ def fetch(token):
         amount_oshi = driver.find_element(By.XPATH,'//div[contains(@class, "content display-domain white")]/div[contains(@class, "inscription-name too-long")]')
  
     wait.until(EC.presence_of_element_located((By.CLASS_NAME, "usd")))
-=======
     price_sats = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
     price_sats = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "price")]')
     amount_oshi = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "inscription-name  ")))
     amount_oshi = driver.find_element(By.XPATH, '//div[contains(@class, "content display-domain white")]/div[contains(@class, "inscription-name  ")]')
     price_usd = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "usd")))
->>>>>>> refs/remotes/origin/main
     price_usd = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "usd")]')
     xpath = "//*[@id='rc-tabs-0-panel-1']/div/div/div[1]/div[2]/div[3]/span[1]"
     price_btc = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     price_btc = driver.find_element(By.XPATH, xpath)
-<<<<<<< HEAD
     try :
         price_sats = int(price_sats.text)
     except ValueError:
         price_sats = float(price_sats.text)
 
-=======
-    
-<<<<<<< HEAD
     price_sats = int(price_sats.text)
->>>>>>> refs/remotes/origin/main
-=======
     price_sats = (price_sats.text).replace(',', '')
     price_sats = int(price_sats)
->>>>>>> main
     amount_oshi = (amount_oshi.text).replace(',','')
     amount_oshi = int(amount_oshi)
     price_usd = price_usd.text

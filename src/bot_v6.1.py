@@ -43,27 +43,34 @@ import os
 config = dotenv_values(".env")
 key = config['KEY']
 
-# Define a custom filter class to exclude log records with specific messages
-class ExcludeGetUpdatesFilter(logging.Filter):
-    def filter(self, record):
-        # Print the log message for debugging
-        print(record.getMessage())
-        return f"HTTP Request: POST https://api.telegram.org/bot{key}/getUpdates \"HTTP/1.1 200 OK\"" not in record.getMessage()
-
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-
-# Get the root logger
+# Create a custom logger
 logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
-# Create an instance of the custom filter class
-exclude_get_updates_filter = ExcludeGetUpdatesFilter()
+# Create a custom handler
+class CustomHandler(logging.StreamHandler):
+    def emit(self, record):
+        if "HTTP Request: POST https://api.telegram.org/bot" in record.getMessage() and "getUpdates" in record.getMessage():
+            return
+        super().emit(record)
 
-# Add the custom filter to exclude getUpdates messages
-logger.addFilter(exclude_get_updates_filter)
+# Create a formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Create a handler and set the formatter
+handler = CustomHandler()
+handler.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(handler)
+
+# Test the logging
+logger.info("This is a test log")
+logger.info("HTTP Request: POST https://api.telegram.org/bot6133161106:AAH6TiOvhLbMEppQIBjq0uHcbb1_6oP6h1A/getMe")
+logger.info("HTTP Request: POST https://api.telegram.org/bot6133161106:AAH6TiOvhLbMEppQIBjq0uHcbb1_6oP6h1A/deleteWebhook")
+logger.info("Application started")
+logger.info("HTTP Request: POST https://api.telegram.org/bot6133161106:AAH6TiOvhLbMEppQIBjq0uHcbb1_6oP6h1A/getUpdates")
+
 
 # ---------------------------------------------------------
 #                   UTILS
