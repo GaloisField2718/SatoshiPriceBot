@@ -122,8 +122,14 @@ Next goal should be to handle errors which can occurs due to multiple browser an
 - Improve HTML treatment which is not good for `/btcInfo` for example ;
 
 - Make a containerisation of this code with `Docker`.
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
 
+>>>>>>> main
 - Create a lightning invoice for `/support` command.
+>>>>>>> refs/remotes/origin/main
 
 
 # Contact

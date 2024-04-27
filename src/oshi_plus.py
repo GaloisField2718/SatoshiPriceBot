@@ -11,6 +11,16 @@ def fetch(token):
     driver = webdriver.Chrome(options=options)
     driver.get(f'https://unisat.io/market/brc20?tick={token}')
     wait = WebDriverWait(driver, 10)
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
+    price_sats = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "price")]')
+    try :
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "inscription-name  ")))
+        amount_oshi = driver.find_element(By.XPATH, '//div[contains(@class, "content display-domain white")]/div[contains(@class, "inscription-name")]')
+    except ERROR:
+        wait.unit(EC.presence_of_element_located((By.CLASS_NAME, "inscription-name too-long")))
+        amount_oshi = driver.find_element(By.XPATH,'//div[contains(@class, "content display-domain white")]/div[contains(@class, "inscription-name too-long")]')
+ 
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "usd")))
     price_sats = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
     price_sats = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "price")]')
     amount_oshi = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "inscription-name  ")))
@@ -20,7 +30,12 @@ def fetch(token):
     xpath = "//*[@id='rc-tabs-0-panel-1']/div/div/div[1]/div[2]/div[3]/span[1]"
     price_btc = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     price_btc = driver.find_element(By.XPATH, xpath)
-    
+    try :
+        price_sats = int(price_sats.text)
+    except ValueError:
+        price_sats = float(price_sats.text)
+
+    price_sats = int(price_sats.text)
     price_sats = (price_sats.text).replace(',', '')
     price_sats = int(price_sats)
     amount_oshi = (amount_oshi.text).replace(',','')

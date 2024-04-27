@@ -350,6 +350,8 @@ async def ordi(update: Update, context: ContextTypes.DEFAULT_TYPE) :
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message) 
 
 
+<<<<<<< HEAD
+=======
 async def getlastprice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Please wait it's loading ....")
     token = context.args[0] if context.args else None
@@ -366,6 +368,7 @@ async def getlastprice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     
 
+>>>>>>> refs/remotes/origin/main
 async def btcDevEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
@@ -416,11 +419,18 @@ async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_btcDevEngagement = f"/btcDevEngagement: Some measure from github `bitcoin` repo 😼 \n "
     message_oshi = "/oshi : Fetch Last price of OSHI from unisat.\n " #TODO : Details OSHI project
     message_ordi = "/ordi : Fetch last price of ORDI from unisat. "#TODO : Tell the story about ORDI
+<<<<<<< HEAD
+
+    message_help += sep2 + message_btc2eur + message_eur2btc + message_btc2sats + message_sats2btc + message_sats2eur + message_eur2sats + sep3 + message_codePrices+message_codeConvert + \
+        message_codeBot +sep_vol + message_major_volumes +message_kraken_volumes + message_binance_volumes + sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + \
+        message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + message_oshi + message_ordi
+=======
     message_getlastprice = "/getlastprice `token`: Fetch the price of `token` which should be a valid brc-20 sold on Unisat. It will give you the less expensive pack from Unisat Marketplace. \n"
 
     message_help += sep2 + message_btc2eur + message_eur2btc + message_btc2sats + message_sats2btc + message_sats2eur + message_eur2sats + sep3 + message_codePrices+message_codeConvert + \
         message_codeBot +sep_vol + message_major_volumes +message_kraken_volumes + message_binance_volumes + sep_general + message_start + message_btcPrice + message_btcInfo + message_btcATH + \
         message_btcMovements + message_btcSupply + message_btcPublicEngagement + message_btcDevEngagement + message_oshi + message_ordi + message_getlastprice
+>>>>>>> refs/remotes/origin/main
     message_help += "/help : Display this message 💬 \n"
 
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_help)
@@ -456,8 +466,11 @@ if __name__ == '__main__':
 
     oshi_handler = CommandHandler('oshi', oshi_)
     ordi_handler = CommandHandler('ordi', ordi) 
+<<<<<<< HEAD
+=======
     getlastprice_handler = CommandHandler('getlastprice', getlastprice)
 
+>>>>>>> refs/remotes/origin/main
     help_handler = CommandHandler('help', helper)
 
     application.add_handler(start_handler)
@@ -471,7 +484,10 @@ if __name__ == '__main__':
     application.add_handler(btcDevEngagement_handler)
     application.add_handler(oshi_handler)
     application.add_handler(ordi_handler)
+<<<<<<< HEAD
+=======
     application.add_handler(getlastprice_handler)
+>>>>>>> refs/remotes/origin/main
 
     application.add_handler(eur2btc_handler)
     application.add_handler(btc2eur_handler)
