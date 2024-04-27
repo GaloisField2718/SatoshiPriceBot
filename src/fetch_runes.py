@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import json
 import requests as req
+from datetime import datetime
 
 def parse_rune_name(rune):
     dot = '.'
@@ -35,7 +36,7 @@ def get_supply(rune):
 def parse_rune_info(rune_info):
     # Parse the JSON data
     data = rune_info['entry']
-
+    print(data)
     # Construct the formatted message
     formatted_message = (
         f"Spaced Rune: {data['spaced_rune']}\n"
@@ -46,19 +47,24 @@ def parse_rune_info(rune_info):
         f"Block: {data['block']}\n"
         f"Symbol: {data['symbol']}\n"
         f"Number: {data['number']}\n"
-        f"Timestamp: {data['timestamp']}\n"
-        f"Burned: {data['burned']}\n"
-        f"Mints: {data['mints']}\n"
-        f"Premine: {data['premine']}\n"
+        f"Timestamp: {datetime.fromtimestamp(data['timestamp'])}\n"
+        f"Burned: {'{:,}'.format(data['burned'])}\n"
+        f"Mints: {'{:,}'.format(data['mints'])}\n"
+        f"Premine: {'{:,}'.format(data['premine'])}\n"
         f"Divisibility: {data['divisibility']}\n"
         f"Etching: {data['etching']}\n"
         f"Turbo: {'✅' if data['turbo'] else '❌'}\n"
+        )
+    if data['terms']:
+        formatted_message += (
         "Terms:\n"
-        f"  - Amount: {data['terms']['amount']}\n"
-        f"  - Cap: {data['terms']['cap']}\n"
+        f"  - Amount: {'{:,}'.format(data['terms']['amount'])}\n"
+        f"  - Cap: {'{:,}'.format(data['terms']['cap'])}\n"
         f"  - Height: {data['terms']['height']}\n"
         f"  - Offset: {data['terms']['offset']}"
     )
+    else:
+        formatted_message += "Terms: None \n"
 
     return formatted_message
 
@@ -68,11 +74,14 @@ def get_info(rune):
     url = f'http://94.16.123.98:8080/rune/{rune_name}'
     response = req.get(url, headers={"Accept":"application/json"})
     rune_info = json.loads(response.text)
-    inscription = rune_info['parent']
-    rune_id = rune_info['id']
-    mintable = rune_info['mintable']
-    rune_info = rune_info['entry']
-    return (inscription, rune_id, mintable, rune_info)
+    return rune_info
+
+
+def info_message(rune):
+    rune_name = parse_rune_name(rune)
+    rune_info = get_info(rune_name)
+    message = parse_rune_info(rune_info)
+    return message
 
 def sat2btc(sats):
     return sats/(10**8)
