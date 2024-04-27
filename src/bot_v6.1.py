@@ -43,11 +43,27 @@ import os
 config = dotenv_values(".env")
 key = config['KEY']
 
+# Define a custom filter class to exclude log records with specific messages
+class ExcludeGetUpdatesFilter(logging.Filter):
+    def filter(self, record):
+        # Print the log message for debugging
+        print(record.getMessage())
+        return f"HTTP Request: POST https://api.telegram.org/bot{key}/getUpdates \"HTTP/1.1 200 OK\"" not in record.getMessage()
+
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
+# Get the root logger
+logger = logging.getLogger()
+
+# Create an instance of the custom filter class
+exclude_get_updates_filter = ExcludeGetUpdatesFilter()
+
+# Add the custom filter to exclude getUpdates messages
+logger.addFilter(exclude_get_updates_filter)
 
 # ---------------------------------------------------------
 #                   UTILS
@@ -73,11 +89,11 @@ def display_format(major_volumes):
     return major_volumes_str
 
 
-
+#---------------------------------------------------------
 #---------------------------------------------------------
 #                   BOT COMMANDS
 #---------------------------------------------------------
-
+#---------------------------------------------------------
 
 # ---------------------------------------------------------
 #                   CONVERSION
@@ -370,6 +386,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def btcPrice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("btcPrice called")
     # DATA
     fetcher = CoinDataFetcher('bitcoin')
     data = fetcher.get_coin_data()
