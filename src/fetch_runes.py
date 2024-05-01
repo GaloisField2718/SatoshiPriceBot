@@ -97,23 +97,10 @@ def debugCard(card):
 ############################################################
 
 def floor_listing(rune):
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
-    
-    rune_name = parse_rune_name(rune)
-    driver.get(f'https://unisat.io/runes/market?tick={rune_name}')
-    wait = WebDriverWait(driver, 30)
-    floor_price_sats = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
-    floor_price_sats = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "price")]')
-    
-    xpath = "//*[@id='rc-tabs-0-panel-1']/div/div[1]/div[1]"
-    floor_card_info = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
-    floor_card_info = driver.find_element(By.XPATH, xpath)
-    
+   
     floor_card = floor_card_info.text.split('\n')
     rune_spaced_name = floor_card[0]
-    runes_amount = float(floor_card[1].replace(',',''))
+    runes_amount = float(floor_card[0].replace(',',''))
     text_sats_symbol = floor_card[2]
     text_unit_price_usd = floor_card[3]
     incomplete_outpoint = floor_card[4]
@@ -142,8 +129,8 @@ def fetch(rune):
     wait = WebDriverWait(driver, 30)
     floor_price_sats = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
     floor_price_sats = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "price")]')
-    
-    xpath = "//*[@id='rc-tabs-0-panel-1']/div/div[1]/div[1]"
+
+    xpath = "//*[@id='rc-tabs-0-panel-1']/div[2]/div[1]/div[1]"
     floor_card_info = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     floor_card_info = driver.find_element(By.XPATH, xpath)
     
@@ -158,10 +145,12 @@ def fetch(rune):
         floor_price_sats = int(floor_price_sats)
     except ValueError:
         floor_price_sats = float(floor_price_sats)
+
+    print("floor sats price: ", floor_price_sats)
     floor_price_btc = sat2btc(floor_price_sats)
-   
+#   
     total_supply = get_supply(rune)
-    
+#    
     btc_marketcap = floor_price_btc*total_supply
     sats_marketcap = floor_price_sats*total_supply
     usd_marketcap = floor_unit_price_usd*total_supply
@@ -169,7 +158,9 @@ def fetch(rune):
     driver.quit()
     
     return (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap)
-   
+
+fetch('wanko.manko.runes')
+
 # TODO: Handle second, third, etc.
 #    xpath_second = "//*[@id='rc-tabs-1-panel-1']/div/div[1]/div[2]"
 

@@ -64,13 +64,6 @@ handler.setFormatter(formatter)
 # Add the handler to the logger
 logger.addHandler(handler)
 
-# Test the logging
-logger.info("This is a test log")
-logger.info("HTTP Request: POST https://api.telegram.org/bot6133161106:AAH6TiOvhLbMEppQIBjq0uHcbb1_6oP6h1A/getMe")
-logger.info("HTTP Request: POST https://api.telegram.org/bot6133161106:AAH6TiOvhLbMEppQIBjq0uHcbb1_6oP6h1A/deleteWebhook")
-logger.info("Application started")
-logger.info("HTTP Request: POST https://api.telegram.org/bot6133161106:AAH6TiOvhLbMEppQIBjq0uHcbb1_6oP6h1A/getUpdates")
-
 
 # ---------------------------------------------------------
 #                   UTILS
