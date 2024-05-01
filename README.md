@@ -109,6 +109,8 @@ Next goal should be to handle errors which can occurs due to multiple browser an
 
 - Important: Handle errors during browser and requests calls. Provide a feedback to the user about the error. Provide tracking into loggin to be able to help the user if there is a problem in transportation or server side. 
 
+- Use `get_xpath` into `fetch_runes.fetch` rather than full xpath.
+
 - Fetch prices from [Atomical marketplace](https://atomicalmarket.com) like BRC-20.
     - I tried to copy paste the code for Unisat but it's not working like this. 
     - It should be quite easy !
@@ -122,15 +124,6 @@ Next goal should be to handle errors which can occurs due to multiple browser an
 - Improve HTML treatment which is not good for `/btcInfo` for example ;
 
 - Make a containerisation of this code with `Docker`.
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
-
->>>>>>> main
-- Create a lightning invoice for `/support` command.
->>>>>>> refs/remotes/origin/main
-
 
 # Contact
 

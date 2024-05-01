@@ -122,7 +122,7 @@ def fetch(rune):
     rune_name = parse_rune_name(rune)
     driver.get(f'https://unisat.io/runes/market?tick={rune_name}')
     # Due to some errors. Loading time (to improve)
-    wait = WebDriverWait(driver, 3)
+    wait = WebDriverWait(driver, 5)
     #wait.until(EC.presence_of_element_located((By.CLASS_NAME, "trade-item clickable  ")))    
 
     def get_xpath(parent, child):
