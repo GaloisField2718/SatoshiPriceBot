@@ -36,7 +36,6 @@ def get_supply(rune):
 def parse_rune_info(rune_info):
     # Parse the JSON data
     data = rune_info['entry']
-    print(data)
     # Construct the formatted message
     formatted_message = (
         f"Spaced Rune: {data['spaced_rune']}\n"
@@ -98,7 +97,7 @@ def debugCard(card):
 
 def floor_listing(rune):
 
-    floor_card = fetch(rune)
+    floor_card = fetch(rune)[0]
     rune_spaced_name = floor_card[0]
     text_sats_symbol = floor_card[2]
     text_unit_price_usd = floor_card[3]
@@ -123,18 +122,19 @@ def fetch(rune):
     rune_name = parse_rune_name(rune)
     driver.get(f'https://unisat.io/runes/market?tick={rune_name}')
     # Due to some errors. Loading time (to improve)
-    wait = WebDriverWait(driver)
+    wait = WebDriverWait(driver, 5)
 
-    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "trade-item clickable  ")))
+    #wait.until(EC.presence_of_element_located((By.CLASS_NAME, "trade-item clickable  ")))
     
 
     floor_price_sats = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
 
     def get_xpath(parent, child):
-        xpath = f'//div[contains(@class, "{parent}"]/span[contains(@class, "{child}")]'
+        xpath = f'//div[contains(@class, "{parent}")]/span[contains(@class, "{child}")]'
         return xpath
 
-    floor_price_sats = driver.find_element(By.XPATH, get_xpath("price-line", "price"))
+    floor_price_sats = driver.find_element(By.XPATH, get_xpath('price-line', 'price'))
+    floor_price_sats = floor_price_sats.text.replace(',','')     
     
     xpath = "//*[@id='rc-tabs-0-panel-1']/div[2]/div[1]/div[1]"
     floor_card_info = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
@@ -142,22 +142,22 @@ def fetch(rune):
     
     floor_card = floor_card_info.text.split('\n')
 
-    debugCard(floor_card)
+#    debugCard(floor_card)
     
-    return floor_card
+    driver.quit()
+    return (floor_card, floor_price_sats)
   
 def parse_fetch(rune):
-    floor_card = fetch(rune)
+    floor_card = fetch(rune)[0]
+    floor_price_sats = fetch(rune)[1]
     text_sats_symbol = floor_card[2]
     text_unit_price_usd = floor_card[3]
     floor_unit_price_usd = float(text_unit_price_usd.replace('$', ''))
-    floor_price_sats = floor_price_sats.text.replace(',','')     
     try:
         floor_price_sats = int(floor_price_sats)
     except ValueError:
         floor_price_sats = float(floor_price_sats)
 
-    print("floor sats price: ", floor_price_sats.text)
     floor_price_btc = sat2btc(floor_price_sats)
    
     total_supply = get_supply(rune)
@@ -166,11 +166,9 @@ def parse_fetch(rune):
     sats_marketcap = floor_price_sats*total_supply
     usd_marketcap = floor_unit_price_usd*total_supply
 
-    driver.quit()
     
     return (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap)
 
-fetch('wanko.manko.runes')
 
 # TODO: Handle second, third, etc.
 #    xpath_second = "//*[@id='rc-tabs-1-panel-1']/div/div[1]/div[2]"
@@ -193,6 +191,6 @@ def get_sats_symbol(rune):
     return text_sats_symbol
 
 
-runes = ['SATOSHI•NAKAMOTO', 'MEME•ECONOMICS', 'WANKO•MANKO•RUNES', 'BITCOIN•DRUG•MONEY', 'VIVA•LASOGETTE']
-for rune in runes:
-    floor_listing(rune)
+#runes = ['SATOSHI•NAKAMOTO', 'MEME•ECONOMICS', 'WANKO•MANKO•RUNES', 'BITCOIN•DRUG•MONEY', 'VIVA•LASOGETTE']
+#for rune in runes:
+#    floor_listing(rune)
