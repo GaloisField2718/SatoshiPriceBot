@@ -97,17 +97,13 @@ def debugCard(card):
 ############################################################
 
 def floor_listing(rune):
-   
-    floor_card = floor_card_info.text.split('\n')
+
+    floor_card = fetch(rune)
     rune_spaced_name = floor_card[0]
-    runes_amount = float(floor_card[0].replace(',',''))
     text_sats_symbol = floor_card[2]
     text_unit_price_usd = floor_card[3]
-    incomplete_outpoint = floor_card[4]
-    total_amount_btc = float(floor_card[5])
-    text_total_amount_usd = floor_card[6]
     
-    message = ""
+    message = f"{rune_spaced_name}\n"
     card = floor_card
     for index in range(len(card)-1):
         message +=f"Card[ {index} ] = {card[index]}\n"
@@ -117,26 +113,41 @@ def floor_listing(rune):
     message +=f"👉 Marketcap: ${'{:,}'.format(usd_marketcap)} = {btc_marketcap}BTC."
     
     return message
-
   
 def fetch(rune):
+    # Init Browser
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
     
     rune_name = parse_rune_name(rune)
     driver.get(f'https://unisat.io/runes/market?tick={rune_name}')
-    wait = WebDriverWait(driver, 30)
-    floor_price_sats = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
-    floor_price_sats = driver.find_element(By.XPATH, '//div[contains(@class, "price-line")]/span[contains(@class, "price")]')
+    # Due to some errors. Loading time (to improve)
+    wait = WebDriverWait(driver)
 
+    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "trade-item clickable  ")))
+    
+
+    floor_price_sats = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "price")))
+
+    def get_xpath(parent, child):
+        xpath = f'//div[contains(@class, "{parent}"]/span[contains(@class, "{child}")]'
+        return xpath
+
+    floor_price_sats = driver.find_element(By.XPATH, get_xpath("price-line", "price"))
+    
     xpath = "//*[@id='rc-tabs-0-panel-1']/div[2]/div[1]/div[1]"
     floor_card_info = wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
     floor_card_info = driver.find_element(By.XPATH, xpath)
     
     floor_card = floor_card_info.text.split('\n')
-#    debugCard(floor_card)
-   
+
+    debugCard(floor_card)
+    
+    return floor_card
+  
+def parse_fetch(rune):
+    floor_card = fetch(rune)
     text_sats_symbol = floor_card[2]
     text_unit_price_usd = floor_card[3]
     floor_unit_price_usd = float(text_unit_price_usd.replace('$', ''))
@@ -146,11 +157,11 @@ def fetch(rune):
     except ValueError:
         floor_price_sats = float(floor_price_sats)
 
-    print("floor sats price: ", floor_price_sats)
+    print("floor sats price: ", floor_price_sats.text)
     floor_price_btc = sat2btc(floor_price_sats)
-#   
+   
     total_supply = get_supply(rune)
-#    
+    
     btc_marketcap = floor_price_btc*total_supply
     sats_marketcap = floor_price_sats*total_supply
     usd_marketcap = floor_unit_price_usd*total_supply
@@ -166,22 +177,22 @@ fetch('wanko.manko.runes')
 
 
 def get_marketcap(rune):
-    (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap) = fetch(rune)
+    (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap) = parse_fetch(rune)
 
     return (btc_marketcap, usd_marketcap)
 
 def get_floor_prices(rune):
-    (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap) = fetch(rune)
+    (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap) = parse_fetch(rune)
 
     return (floor_unit_price_usd, floor_price_sats, floor_price_btc)
 
 
 def get_sats_symbol(rune):
-    (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap) = fetch(rune)
+    (text_sats_symbol, floor_unit_price_usd, floor_price_sats, floor_price_btc, usd_marketcap, btc_marketcap) = parse_fetch(rune)
 
     return text_sats_symbol
 
 
-#runes = ['SATOSHI•NAKAMOTO', 'MEME•ECONOMICS', 'WANKO•MANKO•RUNES', 'BITCOIN•DRUG•MONEY', 'VIVA•LASOGETTE']
-#for rune in runes:
-#    floor_listing(rune)
+runes = ['SATOSHI•NAKAMOTO', 'MEME•ECONOMICS', 'WANKO•MANKO•RUNES', 'BITCOIN•DRUG•MONEY', 'VIVA•LASOGETTE']
+for rune in runes:
+    floor_listing(rune)
