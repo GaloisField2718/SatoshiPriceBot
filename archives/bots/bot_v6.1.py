@@ -15,9 +15,6 @@ from telegram import Update, error
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, ContextTypes, CommandHandler
 from telegram import ReplyKeyboardMarkup
 from telegram import InputMediaPhoto #To reply with a Photo
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackQueryHandler
-
 
 #####################################
 ### PACKAGE FOR .env hidden file ####
@@ -91,8 +88,6 @@ def display_format(major_volumes):
 
     return major_volumes_str
 
-def create_inline_keyboard(buttons):
-    return InlineKeyboardMarkup([[InlineKeyboardButton(text, callback_data=data) for text, data in row] for row in buttons])
 
 #---------------------------------------------------------
 #---------------------------------------------------------
@@ -232,7 +227,7 @@ async def fees(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info("fees called \n")
     try : 
         fees = Fees()
-        message = f"No priority : {fees.no_priority}, Low priority : {fees.low_fees}, Mid priority : {fees.medium_fees}, High priority : {fees.max_fees} "
+        message = f"Mempool fees 🚀 : \n No priority : {fees.no_priority}, Low priority : {fees.low_fees}, Mid priority : {fees.medium_fees}, High priority : {fees.max_fees} "
         await context.bot.send_message(chat_id= update.effective_chat.id, text=message)
 
     except Exception as e:
@@ -384,345 +379,10 @@ async def runemc(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ---------------------------------------------------------
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [("Conversions", "category_conversions"), ("Fees", "category_fees")],
-        [("Volumes", "category_volumes"), ("Runes", "category_runes")],
-        [("General Info", "category_general_info"), ("Help", "category_help")],
-        [("Contribute", "category_contribute")]
-    ]
-    reply_markup = create_inline_keyboard(keyboard)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Welcome to SatoshiPriceBot! 🤖 \nChoose a category to explore:",
-        reply_markup=reply_markup
-    )
-
-
-async def inline_callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    # Conversion types with specific prompts
-    conversion_prompts = {
-        "convert_btc2eur": "Enter the amount of BTC to convert to EUR:",
-        "convert_eur2btc": "Enter the amount of EUR to convert to BTC:",
-        "convert_btc2sat": "Enter the amount of BTC to convert to Sats:",
-        "convert_sat2btc": "Enter the amount of Sats to convert to BTC:",
-    }
-
-    # Store the type of conversion selected and prompt for input
-    if query.data in conversion_prompts:
-        context.user_data["conversion_type"] = query.data
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=conversion_prompts[query.data]
-        )
-
-    # Navigation to other menus
-    elif query.data == "category_conversions":
-        await show_conversions_menu(update, context)
-    elif query.data == "category_fees":
-        await show_fees_menu(update, context)
-    elif query.data == "category_volumes":
-        await show_volumes_menu(update, context)
-    elif query.data == "category_runes":
-        await show_runes_menu(update, context)
-    elif query.data == "category_general_info":
-        await show_general_info_menu(update, context)
-    elif query.data == "category_help":
-        await helper(update, context)
-    elif query.data == "start":
-        await start(update, context)
-
-
-
-async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    try:
-        # Check if it's a Rune action
-        rune_action = context.user_data.get("rune_action")
-        if rune_action:
-            user_input = update.message.text.strip()
-            rune_names = user_input.split()
-
-            if rune_action == "runes_info":
-                for rune in rune_names:
-                    message = fetch_runes.info_message(rune)
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-            elif rune_action == "runes_floor_price":
-                for rune in rune_names:
-                    message = fetch_runes.floor_listing(rune)
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-            elif rune_action == "runes_market_cap":
-                for rune in rune_names:
-                    btc_marketcap, usd_marketcap = fetch_runes.get_marketcap(rune)
-                    message = f"{rune}:\nMarket Cap: {btc_marketcap} BTC / ${usd_marketcap}"
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-            # Clear the rune action
-            context.user_data["rune_action"] = None
-
-            # Show the Runes Menu again
-            await show_runes_menu(update, context)
-            return
-
-        # Handle conversions as before
-        conversion_type = context.user_data.get("conversion_type")
-        if conversion_type:
-            amount = float(update.message.text)
-            if conversion_type == "convert_btc2eur":
-                result = "{:=,}".format(convert.btceur(amount, 0))
-                await update.message.reply_text(f"{amount} BTC = {result} EUR")
-            elif conversion_type == "convert_eur2btc":
-                result = "{:=,}".format(convert.btceur(amount, 1))
-                await update.message.reply_text(f"{amount} EUR = {result} BTC")
-            elif conversion_type == "convert_btc2sat":
-                result = "{:=,}".format(convert.satsbtc(amount, 1))
-                await update.message.reply_text(f"{amount} BTC = {result} Sats")
-            elif conversion_type == "convert_sat2btc":
-                result = "{:=,}".format(convert.satsbtc(amount, 0))
-                await update.message.reply_text(f"{amount} Sats = {result} BTC")
-
-            # Clear conversion type
-            context.user_data["conversion_type"] = None
-            await show_conversions_menu(update, context)
-            return
-
-        # Default fallback
-        await update.message.reply_text("Invalid input. Please try again.")
-    except ValueError:
-        await update.message.reply_text("Invalid input. Please enter a valid number.")
-    except Exception as e:
-        logging.error(f"Error: {e}")
-        await update.message.reply_text("An unexpected error occurred. Please try again.")
-
-
-
-
-
-async def show_conversions_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [("BTC to EUR", "convert_btc2eur"), ("EUR to BTC", "convert_eur2btc")],
-        [("BTC to Sats", "convert_btc2sat"), ("Sats to BTC", "convert_sat2btc")],
-        [("🏠Back to Main Menu", "start")]
-    ]
-    reply_markup = create_inline_keyboard(keyboard)
-    message = (
-        "🔄Choose an option:"
-    )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message,
-        reply_markup=reply_markup
-    )
-
-async def show_fees_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [("📈Mempool Fees", "fetch_fees"), ("🚀Get Max Fees", "fetch_max_fees")],
-        [("🏠Back to Main Menu", "start")]
-    ]
-    reply_markup = create_inline_keyboard(keyboard)
-    message = "Choose an option:"
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message,
-        reply_markup=reply_markup
-    )
-
-async def handle_fees_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-
-    # Safely answer the query
-    try:
-        await query.answer()  # Acknowledge the query to avoid timeout issues
-    except telegram.error.BadRequest as e:
-        logging.warning(f"Failed to answer callback query: {e}")
-
-    # Handle the callback data
-    if query.data == "fetch_fees":
-        logging.info("Calling fees function")
-        await fees(update, context)
-    elif query.data == "fetch_max_fees":
-        logging.info("Calling max_fees function")
-        await max_fees(update, context)
-    elif query.data == "start":
-        logging.info("Navigating back to main menu")
-        await start(update, context)
-        return  # Exit here to prevent showing the fees menu again
-    
-    # After processing, show the Fees Menu again
-    await show_fees_menu(update, context)
-
-
-async def show_volumes_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [("Major Volumes", "major_volumes"), ("Binance Volumes", "binance_volumes")],
-        [("Kraken Volumes", "kraken_volumes")],
-        [("🏠Back to Main Menu", "start")]
-    ]
-    reply_markup = create_inline_keyboard(keyboard)
-    message = "Choose an option to get detailed volume data:"
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message,
-        reply_markup=reply_markup
-    )
-
-async def handle_volumes_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    # Handle the callback data
-    if query.data == "major_volumes":
-        await major_volumes(update, context)
-    elif query.data == "binance_volumes":
-        await binance_volumes(update, context)
-    elif query.data == "kraken_volumes":
-        await kraken_volumes(update, context)
-    elif query.data == "start":
-        await start(update, context)
-        return  # Exit here to prevent showing the volumes menu again
-
-    # After processing, show the Volumes Menu again
-    await show_volumes_menu(update, context)
-
-
-async def show_general_info_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [("Bitcoin Price", "btc_price"), ("Bitcoin Info", "btc_info")],
-        [("Bitcoin ATH", "btc_ath"), ("Movements", "btc_movements")],
-        [("Supply", "btc_supply"), ("Public Engagement", "btc_public")],
-        [("Dev Engagement", "btc_dev")],
-        [("🏠Back to Main Menu", "start")]
-    ]
-    reply_markup = create_inline_keyboard(keyboard)
-    message = "Choose an option to get Bitcoin-related information:"
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message,
-        reply_markup=reply_markup
-    )
-
-async def handle_general_info_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    # Handle the callback data
-    if query.data == "btc_price":
-        await btcPrice(update, context)
-    elif query.data == "btc_info":
-        await btcInfo(update, context)
-    elif query.data == "btc_ath":
-        await btcATH(update, context)
-    elif query.data == "btc_movements":
-        await btcMovements(update, context)
-    elif query.data == "btc_supply":
-        await btcSupply(update, context)
-    elif query.data == "btc_public":
-        await btcPublicEngagement(update, context)
-    elif query.data == "btc_dev":
-        await btcDevEngagement(update, context)
-    elif query.data == "start":
-        await start(update, context)
-        return  # Exit here to prevent showing the general info menu again
-
-    # After processing, show the General Info Menu again
-    await show_general_info_menu(update, context)
-
-async def show_runes_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [("Rune Info", "runes_info"), ("Rune Floor Price", "runes_floor_price")],
-        [("Rune Market Cap", "runes_market_cap"), ("General Rune Listings", "runes_listings")],
-        [("🏠Back to Main Menu", "start")]
-    ]
-    reply_markup = create_inline_keyboard(keyboard)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Choose an option to get details about Runes.",
-        reply_markup=reply_markup
-    )
-
-
-async def handle_runes_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    if query.data == "runes_info":
-        context.user_data["rune_action"] = "runes_info"
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id, 
-            text="Enter the name of the Rune(s) (e.g., `satoshi.nakamoto`) to get basic information:"
-        )
-    elif query.data == "runes_floor_price":
-        context.user_data["rune_action"] = "runes_floor_price"
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id, 
-            text="Enter the name of the Rune(s) to get the floor price listing:"
-        )
-    elif query.data == "runes_market_cap":
-        context.user_data["rune_action"] = "runes_market_cap"
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id, 
-            text="Enter the name of the Rune(s) to get market cap information:"
-        )
-    elif query.data == "runes_listings":
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Fetching general Rune listings from Unisat...")
-        message = fetch_runes.get_all_listings()
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-        await show_runes_menu(update, context)  # Show menu again
-        return
-    elif query.data == "start":
-        await start(update, context)
-        return
-
-    # Don't show the Runes menu again yet; wait for user input
-
-
-
-async def handle_rune_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    rune_action = context.user_data.get("rune_action")
-    user_input = update.message.text.strip()
-    rune_names = user_input.split()
-
-    try:
-        if rune_action == "runes_info":
-            for rune in rune_names:
-                message = fetch_runes.info_message(rune)
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-        elif rune_action == "runes_floor_price":
-            for rune in rune_names:
-                message = fetch_runes.floor_listing(rune)
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-        elif rune_action == "runes_market_cap":
-            for rune in rune_names:
-                btc_marketcap, usd_marketcap = fetch_runes.get_marketcap(rune)
-                message = f"{rune}: {btc_marketcap} BTC / ${usd_marketcap} USD"
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-        context.user_data["rune_action"] = None  # Clear the action
-        await show_runes_menu(update, context)  # Show the Runes menu again
-    except Exception as e:
-        logging.error(f"Error processing Rune input: {e}")
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="An error occurred. Please try again.")
-
-
-async def show_contribute_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    
-    logging.info(f"Contribute button clicked by {query.from_user.username}")
-    
-    message = (
-        " 💡 *Got suggestions or feedback?* \n"
-        "Feel free to contact [@Dev\\_block](https://t.me/Dev\\_block) directly\.\n\n"
-        " ₿ *Want to contribute to the bot's development?* \n"
-        "Check out the repo here: [SatoshiPriceBot GitHub Repository](https://github.com/GaloisField2718/SatoshiPriceBot/tree/main)\n\n"
-        "For more information, see the */help* message\."
-    )
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message,parse_mode="MarkdownV2")
-    await support(update, context)
-
-
-
+    rand = random.randint(0, 1)
+    message_start = f"Welcome on SatoshiPriceBot 👋, \n Here you can find different information about bitcoin with /btcInfo command. You can also make conversions between btc and euro or btc and satoshis. \n To have the full commands list please try /help.\n For any suggestions you can contact @Dev_block. \n See you 🔜 in the /help message.\n \n 👉 If you want to help the hosting 🎛️ of the bot you can send some sats at 💶bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k 👈."
+    logging.info(f"Call `start` from {update.message.chat}.\n Update: {update}\n")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=message_start)
 
 
 async def btcPrice(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -868,47 +528,18 @@ async def btcDevEngagement(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_dev = f"From Github repo (https://github.com/bitcoin/bitcoin) we have : \n - {forks} forks ; \n  - {stars} stars ; \n - {subs} subscribers ; \n - {total_issues} total issues reported ; \n {pull_requests} pull requests to merge ; \n - {contributors} contributors ; \n - {additions_deletions['additions']} additions for {additions_deletions['deletions']} deletions ; \n - {commit_4w} commits on last 4 weeks.\n"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message_dev)
 
-
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Safely handle both message and callback query updates
-    if update.message:
-        username = update.message.chat.username
-        chat_id = update.message.chat.id
-    elif update.callback_query:
-        username = update.callback_query.from_user.username
-        chat_id = update.callback_query.message.chat_id
-    else:
-        username = "unknown"
-        chat_id = None
+    logging.info(f"support called by {update.message.chat.username}\n")
+    message = "You want to support the hosting of the bot ⁉️ You can send some sats at 👉bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k👈.\n I'm hosted at Hostinger and payment can be done in Bitcoin ! So, your money will directly go to Hostinger 🙃. "
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    pic = os.path.join(os.getcwd(), 'qr_generator', 'qr_myaddress.png')
+    print(os.getcwd())
 
-    logging.info(f"support called by {username}\n")
+    await context.bot.send_photo(chat_id=update.effective_chat.id,photo=pic)
 
-    if chat_id:
-        message = ("Want to support the bot's hosting⁉️\n\nYou can send some sats at 👉bc1qxxuuxmlp3wxuyn6uuqw448nzaafuqdxc076m9k👈.\n\nI'm hosted at Hostinger and payment can be done in Bitcoin ! So, your money will directly go to Hostinger 🙃.\n\nThank you for your support!"
-
-        )
-        await context.bot.send_message(chat_id=chat_id, text=message)
-
-        # Attempt to send the QR code
-        pic = os.path.join(os.getcwd(), 'qr_generator', 'qr_myaddress.png')
-        try:
-            await context.bot.send_photo(chat_id=chat_id, photo=pic)
-        except FileNotFoundError:
-            logging.error("QR code image not found.")
-            await context.bot.send_message(
-                chat_id=chat_id,
-                text=" ⚠️ Sorry, the QR code image is currently unavailable. Please use the BTC address above."
-            )
 
 
 async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [("Conversions", "category_conversions"), ("Fees", "category_fees")],
-        [("Volumes", "category_volumes"), ("Runes", "category_runes")],
-        [("General Info", "category_general_info"), ("🏠Back to Main Menu", "start")]
-    ]
-    reply_markup = create_inline_keyboard(keyboard)
-
     message_help = "Here you can find details of all available commands 🖲️ : \n\n"
     message_update = "\n  📣 NEW UPDATE --> RUNES INFO FROM UNISAT! See RUNES section\n \n "    
     sep2 = "\n --- 🔄  CONVERSION SATS <-> BTC <-> EUR  --- \n \n"
@@ -958,9 +589,9 @@ async def helper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sep_rune + message_runeinfo + message_runefloor + message_runemc 
 
     message_help += "/help : Display this message 💬 \n"
+    logging.info(f"help called {update}\n")
 
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message_help, reply_markup=reply_markup)
-
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=message_help)
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(key).build()
@@ -998,14 +629,6 @@ if __name__ == '__main__':
     ordi_handler = CommandHandler('ordi', ordi)
     getlastprice_handler = CommandHandler('getlastprice', getlastprice)
     help_handler = CommandHandler('help', helper)
-    callback_handler = CallbackQueryHandler(inline_callback_handler)
-    message_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, handle_conversion_input)
-    fees_menu_handler = CallbackQueryHandler(handle_fees_callback, pattern="fetch_fees|fetch_max_fees|start")
-    volumes_menu_handler = CallbackQueryHandler(handle_volumes_callback, pattern="major_volumes|binance_volumes|kraken_volumes|start")
-    general_info_menu_handler = CallbackQueryHandler(handle_general_info_callback, pattern="btc_price|btc_info|btc_ath|btc_movements|btc_supply|btc_public|btc_dev|start")
-    runes_menu_handler = CallbackQueryHandler(handle_runes_callback, pattern="runes_info|runes_floor_price|runes_market_cap|runes_listings|start")
-    runes_text_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, handle_rune_input)
-    contribute_menu_handler = CallbackQueryHandler(show_contribute_message, pattern="category_contribute")
     support_handler = CommandHandler('support', support)
     
     application.add_handler(start_handler)
@@ -1020,16 +643,6 @@ if __name__ == '__main__':
     application.add_handler(oshi_handler)
     application.add_handler(ordi_handler)
     application.add_handler(getlastprice_handler)
-
-    application.add_handler(contribute_menu_handler)
-    application.add_handler(runes_text_handler)
-    application.add_handler(runes_menu_handler)
-    application.add_handler(general_info_menu_handler)
-    application.add_handler(volumes_menu_handler)
-    application.add_handler(fees_menu_handler)
-    application.add_handler(callback_handler)
-    application.add_handler(message_handler)
-   
     application.add_handler(support_handler)
     
     application.add_handler(runeinfo_handler)
