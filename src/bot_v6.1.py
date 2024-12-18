@@ -438,37 +438,27 @@ async def inline_callback_handler(update: Update, context: ContextTypes.DEFAULT_
 
 async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        # Check if it's a Rune action
-        rune_action = context.user_data.get("rune_action")
+        # Check for rune action first
+        rune_action = context.user_data.pop("rune_action", None)
         if rune_action:
             user_input = update.message.text.strip()
             rune_names = user_input.split()
-
-            if rune_action == "runes_info":
-                for rune in rune_names:
+            for rune in rune_names:
+                if rune_action == "runes_info":
                     message = fetch_runes.info_message(rune)
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-            elif rune_action == "runes_floor_price":
-                for rune in rune_names:
+                elif rune_action == "runes_floor_price":
                     message = fetch_runes.floor_listing(rune)
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-            elif rune_action == "runes_market_cap":
-                for rune in rune_names:
+                elif rune_action == "runes_market_cap":
                     btc_marketcap, usd_marketcap = fetch_runes.get_marketcap(rune)
                     message = f"{rune}:\nMarket Cap: {btc_marketcap} BTC / ${usd_marketcap}"
-                    await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-
-            # Clear the rune action
-            context.user_data["rune_action"] = None
-
-            # Show the Runes Menu again
-            await show_runes_menu(update, context)
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+            await show_runes_menu(update, context)  # Return to Runes menu
             return
 
-        # Handle conversions as before
-        conversion_type = context.user_data.get("conversion_type")
+        # Handle conversions
+        conversion_type = context.user_data.pop("conversion_type", None)
         if conversion_type:
-            amount = float(update.message.text)
+            amount = float(update.message.text.strip())
             if conversion_type == "convert_btc2eur":
                 result = "{:=,}".format(convert.btceur(amount, 0))
                 await update.message.reply_text(f"{amount} BTC = {result} EUR")
@@ -481,19 +471,16 @@ async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_
             elif conversion_type == "convert_sat2btc":
                 result = "{:=,}".format(convert.satsbtc(amount, 0))
                 await update.message.reply_text(f"{amount} Sats = {result} BTC")
-
-            # Clear conversion type
-            context.user_data["conversion_type"] = None
-            await show_conversions_menu(update, context)
+            await show_conversions_menu(update, context)  # Return to conversions menu
             return
 
         # Default fallback
-        await update.message.reply_text("Invalid input. Please try again.")
+        await update.message.reply_text("Invalid input. Please use the menu options.")
     except ValueError:
         await update.message.reply_text("Invalid input. Please enter a valid number.")
     except Exception as e:
-        logging.error(f"Error: {e}")
-        await update.message.reply_text("An unexpected error occurred. Please try again.")
+        logging.error(f"Error in handle_conversion_input: {e}")
+        await update.message.reply_text("An unexpected error occurred. Please try again later.")
 
 
 
@@ -720,9 +707,6 @@ async def show_contribute_message(update: Update, context: ContextTypes.DEFAULT_
     )
     await context.bot.send_message(chat_id=update.effective_chat.id, text=message,parse_mode="MarkdownV2")
     await support(update, context)
-
-
-
 
 
 async def btcPrice(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1004,7 +988,6 @@ if __name__ == '__main__':
     volumes_menu_handler = CallbackQueryHandler(handle_volumes_callback, pattern="major_volumes|binance_volumes|kraken_volumes|start")
     general_info_menu_handler = CallbackQueryHandler(handle_general_info_callback, pattern="btc_price|btc_info|btc_ath|btc_movements|btc_supply|btc_public|btc_dev|start")
     runes_menu_handler = CallbackQueryHandler(handle_runes_callback, pattern="runes_info|runes_floor_price|runes_market_cap|runes_listings|start")
-    runes_text_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, handle_rune_input)
     contribute_menu_handler = CallbackQueryHandler(show_contribute_message, pattern="category_contribute")
     support_handler = CommandHandler('support', support)
     
@@ -1022,7 +1005,6 @@ if __name__ == '__main__':
     application.add_handler(getlastprice_handler)
 
     application.add_handler(contribute_menu_handler)
-    application.add_handler(runes_text_handler)
     application.add_handler(runes_menu_handler)
     application.add_handler(general_info_menu_handler)
     application.add_handler(volumes_menu_handler)
@@ -1052,4 +1034,3 @@ if __name__ == '__main__':
 
 
     application.run_polling()
-
