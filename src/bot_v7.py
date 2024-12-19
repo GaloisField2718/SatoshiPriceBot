@@ -408,6 +408,8 @@ async def inline_callback_handler(update: Update, context: ContextTypes.DEFAULT_
         "convert_eur2btc": "Enter the amount of EUR to convert to BTC:",
         "convert_btc2sat": "Enter the amount of BTC to convert to Sats:",
         "convert_sat2btc": "Enter the amount of Sats to convert to BTC:",
+        "convert_sat2eur": "Enter the amount of Sats to convert to EUR:",
+        "convert_eur2sat": "Enter the amount of EUR to convert to Sats:",  
     }
 
     # Store the type of conversion selected and prompt for input
@@ -460,17 +462,23 @@ async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_
         if conversion_type:
             amount = float(update.message.text.strip())
             if conversion_type == "convert_btc2eur":
-                result = "{:=,}".format(convert.btceur(amount, 0))
+                result = f"{convert.btceur(amount, 0):,.3f}"  # Show 3 decimal places
                 await update.message.reply_text(f"{amount} BTC = {result} EUR")
             elif conversion_type == "convert_eur2btc":
-                result = "{:=,}".format(convert.btceur(amount, 1))
+                result = f"{convert.btceur(amount, 1):,.8f}"  # Show 8 decimal places
                 await update.message.reply_text(f"{amount} EUR = {result} BTC")
             elif conversion_type == "convert_btc2sat":
-                result = "{:=,}".format(convert.satsbtc(amount, 1))
+                result = f"{convert.satsbtc(amount, 1):,.0f}"  # Sats are integers
                 await update.message.reply_text(f"{amount} BTC = {result} Sats")
             elif conversion_type == "convert_sat2btc":
-                result = "{:=,}".format(convert.satsbtc(amount, 0))
+                result = f"{convert.satsbtc(amount, 0):,.8f}"  # Show 8 decimal places
                 await update.message.reply_text(f"{amount} Sats = {result} BTC")
+            elif conversion_type == "convert_sat2eur":
+                result = f"{convert.satseur(amount, 0):,.3f}"  # Show 3 decimal places
+                await update.message.reply_text(f"{amount} Sats = {result} EUR")
+            elif conversion_type == "convert_eur2sat":
+                result = f"{convert.satseur(amount, 1):,.0f}"  # Sats are integers
+                await update.message.reply_text(f"{amount} EUR = {result} Sats")
             await show_conversions_menu(update, context)  # Return to conversions menu
             return
 
@@ -490,6 +498,7 @@ async def show_conversions_menu(update: Update, context: ContextTypes.DEFAULT_TY
     keyboard = [
         [("BTC to EUR", "convert_btc2eur"), ("EUR to BTC", "convert_eur2btc")],
         [("BTC to Sats", "convert_btc2sat"), ("Sats to BTC", "convert_sat2btc")],
+        [("Sats to EUR", "convert_sat2eur"), ("EUR to Sats", "convert_eur2sat")],
         [("🏠Back to Main Menu", "start")]
     ]
     reply_markup = create_inline_keyboard(keyboard)
