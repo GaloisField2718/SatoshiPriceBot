@@ -702,6 +702,15 @@ async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_
                         text=message,
                         parse_mode='Markdown'
                     )
+                elif conversion_type == "convert_usd2btc":
+                    result = convert.btcusd(amount, 1)
+                    formatted_result = format_number_with_dot("{:.8f}".format(result))
+                    formatted_amount = format_number_with_dot("{:.2f}".format(amount))
+                    message = f"{formatted_amount} USD = `{formatted_result}` BTC"
+                    await update.message.reply_text(
+                        text=message,
+                        parse_mode='Markdown'
+                    )
                 elif conversion_type == "convert_btc2sat":
                     result = convert.satsbtc(amount, 1)
                     formatted_result = format_number_with_dot(str(int(result)))

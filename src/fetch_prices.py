@@ -39,8 +39,8 @@ class CoinDataFetcher :
     return data["market_data"]
 
   # Get current price
-  def get_current_price(self, market_data):
-    return market_data["current_price"]["eur"]
+  def get_current_price(self, market_data, ticker):
+    return market_data["current_price"][ticker]
   
 # Get current timestamp
   def get_timestamp(self, market_data):

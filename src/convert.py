@@ -20,7 +20,7 @@ def btceur(amount, way):
     fetcher = CoinDataFetcher('bitcoin')
     data = fetcher.get_coin_data()
     market_data = fetcher.get_market_data(data)
-    price = fetcher.get_current_price(market_data)
+    price = fetcher.get_current_price(market_data, "eur")
 
     if way == 0:
         eur_price = price*amount
@@ -38,8 +38,7 @@ def btcusd(amount, way):
     fetcher = CoinDataFetcher('bitcoin')
     data = fetcher.get_coin_data()
     market_data = fetcher.get_market_data(data)
-    price = fetcher.get_current_price(market_data)
-    price *= 1.15
+    price = fetcher.get_current_price(market_data, "usd")
     if way == 0:
         usd_price = price * amount
         usd_price = round(usd_price, 3)
