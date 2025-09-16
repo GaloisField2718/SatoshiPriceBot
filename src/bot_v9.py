@@ -756,6 +756,15 @@ async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_
                         text=message,
                         parse_mode='Markdown'
                     )
+                elif conversion_type == "convert_usd2sat":
+                    result = convert.satsusd(amount, 1)
+                    formatted_result = format_number_with_dot(str(int(result)))
+                    formatted_amount = format_number_with_dot("{:.2f}".format(amount))
+                    message = f"{formatted_amount} USD = `{formatted_result}` Sats"
+                    await update.message.reply_text(
+                        text=message,
+                        parse_mode='Markdown'
+                    )
                 await show_conversions_menu(update, context)  # Return to conversions menu
                 return
             except ValueError:
@@ -773,16 +782,20 @@ async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_
 
 async def show_conversions_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [("BTC to EUR", "convert_btc2eur"), ("EUR to BTC", "convert_eur2btc")],
-        [("BTC to USD", "convert_btc2usd"), ("USD to BTC", "convert_usd2btc")],
+        # [("🇪🇺 EUR Conversions", "noop")],
+        [("BTC → EUR", "convert_btc2eur"), ("EUR → BTC", "convert_eur2btc")],
+        [("Sats → EUR", "convert_sat2eur"), ("EUR → Sats", "convert_eur2sat")],
 
-        [("BTC to Sats", "convert_btc2sat"), ("Sats to BTC", "convert_sat2btc")],
+        # [("🇺🇸 USD Conversions", "noop")],
+        [("BTC → USD", "convert_btc2usd"), ("USD → BTC", "convert_usd2btc")],
+        [("Sats → USD", "convert_sat2usd"), ("USD → Sats", "convert_usd2sat")],
 
-        [("Sats to EUR", "convert_sat2eur"), ("EUR to Sats", "convert_eur2sat")],
-        [("Sats to USD", "convert_sat2usd"), ("USD to Sats", "convert_usd2sat")],
-    
-        [("🏠Back to Main Menu", "start")]
+        # [("₿ BTC / Sats", "noop")],
+        [("BTC → Sats", "convert_btc2sat"), ("Sats → BTC", "convert_sat2btc")],
+
+        [("🏠 Back to Main Menu", "start")]
     ]
+
     reply_markup = create_inline_keyboard(keyboard)
     message = (
         "🔄Choose an option:"
