@@ -782,15 +782,15 @@ async def handle_conversion_input(update: Update, context: ContextTypes.DEFAULT_
 
 async def show_conversions_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        # [("🇪🇺 EUR Conversions", "noop")],
+        [("🇪🇺 EUR Conversions", "noop")],
         [("BTC → EUR", "convert_btc2eur"), ("EUR → BTC", "convert_eur2btc")],
         [("Sats → EUR", "convert_sat2eur"), ("EUR → Sats", "convert_eur2sat")],
 
-        # [("🇺🇸 USD Conversions", "noop")],
+        [("🇺🇸 USD Conversions", "noop")],
         [("BTC → USD", "convert_btc2usd"), ("USD → BTC", "convert_usd2btc")],
         [("Sats → USD", "convert_sat2usd"), ("USD → Sats", "convert_usd2sat")],
 
-        # [("₿ BTC / Sats", "noop")],
+        [("₿ BTC / Sats", "noop")],
         [("BTC → Sats", "convert_btc2sat"), ("Sats → BTC", "convert_sat2btc")],
 
         [("🏠 Back to Main Menu", "start")]
